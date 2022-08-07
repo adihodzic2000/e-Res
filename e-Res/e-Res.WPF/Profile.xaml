@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="e_Res.WPF.Profile"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:e_Res.WPF"
+             mc:Ignorable="d"   
+               Height="839" Width="1171">
+    <Grid Background="#003a52">
+
+        <Button Width="100" Content="Upload" Click="Button_Click">
+        </Button>
+        <Image x:Name="image" Width="100" Height="200" Margin="350,0,0,0">
+
+        </Image>
+
+    </Grid>
+</UserControl>

@@ -1,0 +1,15 @@
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\bin\Debug\net6.0\Common.Dtos.deps.json
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\bin\Debug\net6.0\Common.Dtos.dll
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\bin\Debug\net6.0\Common.Dtos.pdb
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\bin\Debug\net6.0\Entities.dll
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\bin\Debug\net6.0\Entities.pdb
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\obj\Debug\net6.0\Common.Dtos.csproj.AssemblyReference.cache
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\obj\Debug\net6.0\Common.Dtos.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\obj\Debug\net6.0\Common.Dtos.AssemblyInfoInputs.cache
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\obj\Debug\net6.0\Common.Dtos.AssemblyInfo.cs
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\obj\Debug\net6.0\Common.Dtos.csproj.CoreCompileInputs.cache
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\obj\Debug\net6.0\Common.Dtos.csproj.CopyComplete
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\obj\Debug\net6.0\Common.Dtos.dll
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\obj\Debug\net6.0\refint\Common.Dtos.dll
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\obj\Debug\net6.0\Common.Dtos.pdb
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common.Dtos\obj\Debug\net6.0\ref\Common.Dtos.dll

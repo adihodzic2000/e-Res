@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="WPF.Calendar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPF"
+             mc:Ignorable="d" 
+             Height="839" Width="1171" Loaded="UserControl_Loaded">
+    <Grid Background="#003a52">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="160*"></RowDefinition>
+            <RowDefinition Height="679*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label Grid.Column="0" VerticalAlignment="Bottom" Content="Ponedeljak" HorizontalAlignment="Center" Foreground="White" FontSize="15"></Label>
+        <Label Grid.Column="1" VerticalAlignment="Bottom" Content="Utorak" HorizontalAlignment="Center" Foreground="White" FontSize="15"></Label>
+        <Label Grid.Column="2" VerticalAlignment="Bottom" Content="Srijeda" HorizontalAlignment="Center" Foreground="White" FontSize="15"></Label>
+        <Label Grid.Column="3" VerticalAlignment="Bottom" Content="Četvrtak" HorizontalAlignment="Center" Foreground="White" FontSize="15"></Label>
+        <Label Grid.Column="4" VerticalAlignment="Bottom" Content="Petak" HorizontalAlignment="Center" Foreground="White" FontSize="15"></Label>
+        <Label Grid.Column="5" VerticalAlignment="Bottom" Content="Subota" HorizontalAlignment="Center" Foreground="White" FontSize="15"></Label>
+        <Label Grid.Column="6" VerticalAlignment="Bottom" Content="Nedelja" HorizontalAlignment="Center" Foreground="White" FontSize="15"></Label>
+        <ScrollViewer  Grid.Column="4" Grid.ColumnSpan="3" Margin="167,0,0,33">
+            <WrapPanel HorizontalAlignment="Right" Margin="5" Name="clRooms">
+
+              
+        </WrapPanel>
+        </ScrollViewer>
+        <Border CornerRadius="10" Background="Transparent" Margin="0,0,0,44" Grid.ColumnSpan="7" Grid.Row="1" >
+            <Grid x:Name="GridDays">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+
+            </Grid>
+        </Border>
+        <Label Content="Kalendar" FontSize="25" Foreground="White" Margin="10"/>
+        <DockPanel Grid.ColumnSpan="2" VerticalAlignment="Center">
+            <Button Click="Button_Click_1" Content="Prethodni mjesec" Margin="5" Width="150"></Button>
+            <Button Click="Button_Click" Content="Sljedeći mjesec" Margin="5" Width="150"></Button>
+        </DockPanel>
+        <DockPanel Grid.Column="2">
+            <Label Name="lblDate" VerticalAlignment="Center" FontSize="20" Foreground="White"></Label>
+        </DockPanel>
+        <Button Grid.Column="3" Width="50" HorizontalAlignment="Left" Height="45" Click="Button_Click_5" >
+            <Image Source="/Assets/plus.png"></Image>
+        </Button>
+        
+    </Grid>
+</UserControl>

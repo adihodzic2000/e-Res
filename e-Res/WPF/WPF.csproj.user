@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <ApplicationDefinition Update="App.xaml">
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="AddGuest.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="AddingServiceToReservation.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="AddReservation.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="AddRoom.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="AddService.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Dashboard.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ForgotPassword.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="MainWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Report\Report.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Report\ReportDataSet.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="AddGuest.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="AddingServiceToReservation.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="AddReservation.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="AddRoom.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="AddService.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Bills.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Calendar.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Chat.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Dashboard.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="ForgotPassword.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Guests.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Login.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Profile.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Report\Report.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Rooms.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Services.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UserControlMenuItem.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Verification.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,15 @@
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\bin\Debug\net6.0\Infractruture.Common.deps.json
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\bin\Debug\net6.0\Infractruture.Common.dll
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\bin\Debug\net6.0\Infractruture.Common.pdb
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\bin\Debug\net6.0\Entities.dll
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\bin\Debug\net6.0\Entities.pdb
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\obj\Debug\net6.0\Infractruture.Common.csproj.AssemblyReference.cache
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\obj\Debug\net6.0\Infractruture.Common.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\obj\Debug\net6.0\Infractruture.Common.AssemblyInfoInputs.cache
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\obj\Debug\net6.0\Infractruture.Common.AssemblyInfo.cs
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\obj\Debug\net6.0\Infractruture.Common.csproj.CoreCompileInputs.cache
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\obj\Debug\net6.0\Infractruture.Common.csproj.CopyComplete
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\obj\Debug\net6.0\Infractruture.Common.dll
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\obj\Debug\net6.0\refint\Infractruture.Common.dll
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\obj\Debug\net6.0\Infractruture.Common.pdb
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\Common\obj\Debug\net6.0\ref\Infractruture.Common.dll
