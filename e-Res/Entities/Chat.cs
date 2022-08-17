@@ -24,6 +24,7 @@ namespace Entities
         public string? Content { get; set; }
         public bool IsDeleted { get; set; }
         public bool Seen { get; set; }
+        public bool Clicked { get; set; }
         public DateTime CreatedDate { get; set; }
 
     }

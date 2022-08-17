@@ -6,8 +6,8 @@ namespace Entities
 {
     public class User : IdentityUser<Guid>
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public Gender Gender { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime CreatedDate { get; set; }

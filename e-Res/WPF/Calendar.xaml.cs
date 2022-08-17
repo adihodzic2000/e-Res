@@ -162,12 +162,12 @@ namespace WPF
                         _reservation.Uid = reservation.Id.ToString();
                         _reservation.PreviewMouseLeftButtonDown += TextBlock_PreviewMouseLeftButtonDown;
                         stackPanel.Children.Add(_reservation);
-                        ToolTip += string.IsNullOrWhiteSpace(ToolTip) == true ? "" : "\n";
-                        ToolTip += reservation.Guest.FirstName + " " + reservation.Guest.LastName + " " + reservation.Room.Title;
+                        //ToolTip += string.IsNullOrWhiteSpace(ToolTip) == true ? "" : "\n";
+                        //ToolTip += reservation.Guest.FirstName + " " + reservation.Guest.LastName + " " + reservation.Room.Title;
 
                     }
                 }
-                border.ToolTip = ToolTip;
+                //border.ToolTip = ToolTip;
                 scrollViewer.Content = stackPanel;
                 border.Child = (scrollViewer);
                 Grid.SetRow(border, row);

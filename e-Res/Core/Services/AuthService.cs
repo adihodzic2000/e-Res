@@ -148,9 +148,7 @@ namespace Core.Services
             var roleClaims = roles.Select(x => new Claim(ClaimTypes.Role, x));
             claims.AddRange(roleClaims);
 
-            // Adding permission claims. 
-            //var permissionClaims = permissions.Select(x => new Claim(CustomClaimTypes.Permission, x));
-            //claims.AddRange(permissionClaims);
+         
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfiguration.Secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -199,9 +197,14 @@ namespace Core.Services
                     x.FirstName,
                     x.LastName,
                     CompanyId=x.CompanyId,
-                    PhoneNumber=x.PhoneNumber
+                    PhoneNumber=x.PhoneNumber,
+                    Email=x.Email,
+                    Gender=x.Gender
                 })
                 .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+
+            var roles=await _dbContext.UserRoles.Where(x=>x.UserId == userId).Select(x=>x.RoleId).ToListAsync(cancellationToken);
+            List<string> stringRoles = await _dbContext.Roles.Where(x => roles.Contains(x.Id)).Select(x=>x.Name).ToListAsync(cancellationToken);
 
             var session = new SessionDto()
             {
@@ -211,7 +214,11 @@ namespace Core.Services
                 Token = accessToken,
                 TokenExpireDate = accessTokenExpiration,
                 CompanyId=websiteUser.CompanyId,
-                PhoneNumber=websiteUser.PhoneNumber
+                PhoneNumber=websiteUser.PhoneNumber,
+                Email=websiteUser.Email,
+                Gender=websiteUser.Gender,
+                Roles= stringRoles,
+                ProfileImagePath=(await _dbContext.Images.Where(x=>x.UserProfilePictureId==userId && !x.IsDeleted).FirstOrDefaultAsync(cancellationToken)).Path
             };
 
             return session;

@@ -18,6 +18,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
+using Core.SearchObjects;
+
 namespace WPF
 {
     /// <summary>
@@ -47,17 +49,23 @@ namespace WPF
         {
             loadMessages();
         }
-        private async void loadContacts()
+        private async void loadContacts(bool canRepeat = false)
         {
             try
             {
-
-                var data1 = await APIService.Get("Chat/get-my-users");
+                SearchByName request = new SearchByName { Name = "" };
+                var data1 = await APIService.Post<Core.Message>("Chat/get-my-users", request);
                 var jsonResult = JsonConvert.DeserializeObject(data1.Data.ToString()).ToString();
                 userGetDtos = JsonConvert.DeserializeObject<List<UserGetDto>>(jsonResult);
 
+                var data2 = await APIService.Get("Chat/get-unclicked-messages");
+                var jsonResult2 = JsonConvert.DeserializeObject(data2.Data.ToString()).ToString();
+                var x = JsonConvert.DeserializeObject<List<GetMessageDto>>(jsonResult2);
+                contacts.Children.Clear();
                 foreach (var n in userGetDtos)
                 {
+                    int counter = x.FindAll(x => x.UserFromId == n.Id).Count();
+
                     System.Windows.Controls.Button button = new System.Windows.Controls.Button();
                     button.BorderThickness = new Thickness(0);
                     button.Padding = new Thickness(0);
@@ -77,11 +85,11 @@ namespace WPF
                     rectangle.Stroke = Helper.Colors.WhiteColor();
 
                     ImageBrush image = new ImageBrush();
-                    image.ImageSource = new BitmapImage(new Uri($"{APIService._endpointImage}/Uploads/Images/801f1b1e-8384-4fc3-ac8a-2bd2785ad919.jpg"));
+                    image.ImageSource = new BitmapImage(new Uri($"{APIService._endpointImage}{n.Image.Path}"));
 
                     rectangle.Fill = image;
                     TextBlock textBlock = new TextBlock();
-                    textBlock.Text = n.FirstName + " " + n.LastName;
+                    textBlock.Text = n.FirstName + " " + n.LastName + (counter == 0 ? "" : (" (" + counter + ")"));
                     textBlock.VerticalAlignment = VerticalAlignment.Center;
                     textBlock.Foreground = Helper.Colors.WhiteColor();
                     textBlock.FontSize = 15;
@@ -99,16 +107,20 @@ namespace WPF
                 }
                 else
                 {
-                    CurrentUser = userGetDtos[0].Id;
-                    user.Text = userGetDtos[0].FirstName + " " + userGetDtos[0].LastName;
-                    myImage.ImageSource = new BitmapImage(new Uri($"{APIService._endpointImage}/Uploads/Images/801f1b1e-8384-4fc3-ac8a-2bd2785ad919.jpg"));
-                    loadMessages();
+                    if (!canRepeat)
+                    {
+                        CurrentUser = userGetDtos[0].Id;
+                        user.Text = userGetDtos[0].FirstName + " " + userGetDtos[0].LastName;
+
+                        myImage.ImageSource = new BitmapImage(new Uri($"{APIService._endpointImage}{userGetDtos[0].Image.Path}"));
+                        loadMessages();
+                    }
                 }
             }
             catch (FlurlHttpException ex)
             {
-                var error = ex.GetResponseJsonAsync<Core.Message>();
-                System.Windows.Forms.MessageBox.Show(error.Result.Info);
+               // var error = ex.GetResponseJsonAsync<Core.Message>();
+                System.Windows.Forms.MessageBox.Show("Greška");
             }
 
         }
@@ -119,7 +131,7 @@ namespace WPF
             CurrentUser = newUser;
             var _user = userGetDtos.Where(x => x.Id == newUser).FirstOrDefault();
             user.Text = _user.FirstName + " " + _user.LastName;
-            myImage.ImageSource = new BitmapImage(new Uri($"{APIService._endpointImage}/Uploads/Images/801f1b1e-8384-4fc3-ac8a-2bd2785ad919.jpg"));
+            myImage.ImageSource = new BitmapImage(new Uri($"{APIService._endpointImage}{_user.Image.Path}"));
             loadMessages();
         }
 
@@ -127,12 +139,15 @@ namespace WPF
         {
             try
             {
-
+                var data3 = await APIService.Put($"Chat/see-unclicked-messages", CurrentUser, null);
+                loadContacts(true);
+                
                 var data1 = await APIService.Get($"Chat/get-messages/{APIService.MyId}/{CurrentUser}");
                 var jsonResult = JsonConvert.DeserializeObject(data1.Data.ToString()).ToString();
                 var x = JsonConvert.DeserializeObject<List<GetMessageDto>>(jsonResult);
+                var orderByDate = x.OrderBy(x => x.CreatedDate);
                 messages.Children.Clear();
-                foreach (var n in x)
+                foreach (var n in orderByDate)
                 {
                     if (n.UserFromId == CurrentUser)
                     {
@@ -176,7 +191,7 @@ namespace WPF
             catch (FlurlHttpException ex)
             {
                 var error = ex.GetResponseJsonAsync<Core.Message>();
-                System.Windows.Forms.MessageBox.Show(error.Result ==null? "Greška!": error.Result.Info);
+                System.Windows.Forms.MessageBox.Show(error.Result == null ? "Greška!" : error.Result.Info);
             }
         }
         private void ScrollViewer_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)

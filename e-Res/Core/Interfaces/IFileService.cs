@@ -14,5 +14,8 @@ namespace Core.Interfaces
         Task<Message> GetImagesByCompanyAsMessageAsync(CancellationToken cancellationToken);
         Task<Message> GetImagesByCompanyIdAsMessageAsync(Guid Id, CancellationToken cancellationToken);//difference between desktop and mobile user
         Task<Message> DeleteImageByCompanyAsMessageAsync(Guid Id, CancellationToken cancellationToken);
+        Task<Message> ChangeMyProfilePictureAsMessageAsync(FileUploadDto fileUploadDto, CancellationToken cancellationToken);
+        Task<Message> GetProfilePictureAsMessageAsync(CancellationToken cancellationToken);
+
     }
 }

@@ -125,28 +125,34 @@ class _CompanyState extends State<Company> {
   }
 
   Future createReservation() async {
-    _baseProvider.setEndPoint("/api/Reservation/create-reservation");
-    final request = {
-      "dateFrom": DateTime(
-              int.parse(dateCtl.text.substring(6, 10)),
-              int.parse(dateCtl.text.substring(3, 5)),
-              int.parse(dateCtl.text.substring(0, 2)))
-          .toString(),
-      "dateTo": DateTime(
-              int.parse(dateCtl2.text.substring(6, 10)),
-              int.parse(dateCtl2.text.substring(3, 5)),
-              int.parse(dateCtl2.text.substring(0, 2)))
-          .toString(),
-      "roomId": selectedRoom?.id,
-      "guestId": guestId
-    };
-    var tmpData = await _baseProvider.insert(request);
-    if (tmpData['status'].toString() != "200") {
-      deleteGuestForCompany();
+    try {
+      _baseProvider.setEndPoint("/api/Reservation/create-reservation");
+      final request = {
+        "dateFrom": DateTime(
+                int.parse(dateCtl.text.substring(6, 10)),
+                int.parse(dateCtl.text.substring(3, 5)),
+                int.parse(dateCtl.text.substring(0, 2)))
+            .toString(),
+        "dateTo": DateTime(
+                int.parse(dateCtl2.text.substring(6, 10)),
+                int.parse(dateCtl2.text.substring(3, 5)),
+                int.parse(dateCtl2.text.substring(0, 2)))
+            .toString(),
+        "roomId": selectedRoom?.id,
+        "guestId": guestId
+      };
+      var tmpData = await _baseProvider.insert(request);
+      if (tmpData['status'].toString() != "200") {
+        deleteGuestForCompany();
+      }
+      setState(() {
+        message = tmpData['info'];
+      });
+    } on Exception catch (_) {
+      print("Niste izabrali datume");
+    } catch (error) {
+      print("Niste izabrali datume");
     }
-    setState(() {
-      message = tmpData['info'];
-    });
   }
 
   TextEditingController price = new TextEditingController();

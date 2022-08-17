@@ -87,10 +87,10 @@ C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\obj\Debug\net6.0\refint\e-Res.dl
 C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\obj\Debug\net6.0\e-Res.pdb
 C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\obj\Debug\net6.0\e-Res.genruntimeconfig.cache
 C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\obj\Debug\net6.0\ref\e-Res.dll
-C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\obj\Debug\net6.0\e-Res.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\bin\Debug\net6.0\Stripe.net.dll
 C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\bin\Debug\net6.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\bin\Debug\net6.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
 C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+C:\Users\Adi\Documents\GitHub\e-Res\e-Res\e-Res\obj\Debug\net6.0\e-Res.MvcApplicationPartsAssemblyInfo.cs

@@ -1,16 +1,26 @@
 import 'dart:io';
 import 'package:eres/Providers/baseProvider.dart';
-import 'package:eres/Screens/Chat.dart';
+import 'package:eres/Screens/Bills.dart';
+import 'package:eres/Screens/ChatUsers.dart';
+import 'package:eres/Screens/ForgotPassword.dart';
 import 'package:eres/Screens/HomePage.dart';
+import 'package:eres/Screens/MyPlaces.dart';
+import 'package:eres/Screens/MyProfile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
-
-import 'Screens/Company.dart';
 import 'Screens/Maps.dart';
+import 'Screens/Registration.dart';
 
-void main() {
+void main() async {
   HttpOverrides.global = new MyHttpOverrides();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  Stripe.publishableKey =
+      "pk_test_51LS4cRFZdZe5rLR6wpNk9gLGUxCtdm8kIaymO3CifwTxihGUdSTyRmIl0ipk4rYMfHTdNVBoBmgLbSpCP6IrCzV500wcxqU1Hv";
+  // await Stripe.instance.applySettings();
 
   runApp(MyApp());
 }
@@ -64,8 +74,26 @@ class MyApp extends StatelessWidget {
                     )));
           } else if (settings.name == Maps.routeName) {
             return MaterialPageRoute(builder: ((context) => const Maps()));
+          } else if (settings.name == ChatUsers.routeName) {
+            return MaterialPageRoute(builder: ((context) => const ChatUsers()));
+          } else if (settings.name == MyPlaces.routeName) {
+            return MaterialPageRoute(builder: ((context) => const MyPlaces()));
+          } else if (settings.name == MyProfile.routeName) {
+            return MaterialPageRoute(builder: ((context) => const MyProfile()));
+          } else if (settings.name == Bills.routeName) {
+            return MaterialPageRoute(builder: ((context) => const Bills()));
+          } else if (settings.name == ForgotPassword.routeName) {
+            return MaterialPageRoute(
+                builder: ((context) => const ForgotPassword()));
+          } else if (settings.name == Registration.routeName) {
+            return MaterialPageRoute(
+                builder: ((context) => const Registration()));
+          } else if (settings.name == MyHomePage.routeName) {
+            return MaterialPageRoute(
+                builder: ((context) => MyHomePage(
+                      title: "ERES",
+                    )));
           }
-
           // else if (settings.name == FilterPage.routeName) {
           //   return MaterialPageRoute(builder: ((context) => FilterPage()));
           // }
@@ -222,7 +250,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 _baseProvider.setEndPoint("/api/Auth");
                                 var response = await _baseProvider.LogIn(auth);
 
-                                if (response != null) {
+                                if (response != null &&
+                                    response['roles']
+                                        .toString()
+                                        .contains("Mobile")) {
                                   Message = "";
                                   Navigator.popAndPushNamed(
                                       context, HomePage.routeName);
@@ -254,12 +285,29 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ]),
                           ),
                         ),
-                        TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              "Zaboravili ste šifru?",
-                              style: TextStyle(color: Colors.white),
-                            )),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, Registration.routeName);
+                                },
+                                child: Text(
+                                  "Registrujte se",
+                                  style: TextStyle(color: Colors.white),
+                                )),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, ForgotPassword.routeName);
+                                },
+                                child: Text(
+                                  "Zaboravili ste šifru?",
+                                  style: TextStyle(color: Colors.white),
+                                )),
+                          ],
+                        ),
                         SizedBox(
                           height: 5,
                         ),

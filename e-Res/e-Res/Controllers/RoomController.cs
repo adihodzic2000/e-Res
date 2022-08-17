@@ -35,7 +35,7 @@ namespace e_Res.Controllers
             return Ok(message);
         }
 
-        [HttpGet("get-room/{Id}"), Authorize(Roles = "Desktop")]
+        [HttpGet("get-room/{Id}"), Authorize()]
         public async Task<IActionResult> GetRoomAsMessageAsync(Guid Id, CancellationToken cancellationToken)
         {
             var message = await _roomsService.GetRoomAsMessageAsync(Id, cancellationToken);
@@ -62,7 +62,7 @@ namespace e_Res.Controllers
             return Ok(message);
         }
 
-        [HttpPost("get-rooms-by-company-id"), Authorize(Roles = "Desktop")]
+        [HttpPost("get-rooms-by-company-id"), Authorize()]
         public async Task<IActionResult> GetGuestByCompanyIdAsMessageAsync(BaseSearchObject baseSearch, CancellationToken cancellationToken)
         {
             var message = await _roomsService.GetRoomsByCompanyIdAsMessageAsync(baseSearch, cancellationToken);

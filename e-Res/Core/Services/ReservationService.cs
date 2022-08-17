@@ -57,7 +57,7 @@ namespace Core.Services
                         return new Message
                         {
                             IsValid = false,
-                            Info = "Bad dates!",
+                            Info = "Pogrešni datumi!",
                             Status = ExceptionCode.BadRequest
                         };
                     bool exist = ReservationExistInDatabase((Guid)reservationCreateDto.RoomId, reservationCreateDto.DateFrom, reservationCreateDto.DateTo);
@@ -66,7 +66,7 @@ namespace Core.Services
                         return new Message
                         {
                             IsValid = false,
-                            Info = "Room is not opened in that period!",
+                            Info = "Soba nije slobodna u tom periodu",
                             Status = ExceptionCode.BadRequest
                         };
                     }
@@ -84,7 +84,7 @@ namespace Core.Services
                     return new Message
                     {
                         IsValid = false,
-                        Info = "No rooms that are opened in that period!",
+                        Info = "Nema soba koje su slobodne u tom periodu",
                         Status = ExceptionCode.BadRequest
                     };
 
@@ -103,7 +103,7 @@ namespace Core.Services
                 return new Message
                 {
                     IsValid = true,
-                    Info = "Successfully added reservation",
+                    Info = "Uspješno ste kreirali rezervaciju!",
                     Status = ExceptionCode.Success,
                     Data = reservationCreateDto
                 };
@@ -449,7 +449,12 @@ namespace Core.Services
         {
             try
             {
+                var loggedUser = await authContext.GetLoggedUser();
                 var obj = Mapper.Map<Reviews>(reviewCreateDto);
+                obj.IsDeleted = false;
+                obj.CreatedDate = DateTime.Now;
+                obj.CreatedByUserId = loggedUser.Id;
+               
                 await _dbContext.Reviews.AddAsync(obj);
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 return new Message { Info = "Successfuly returned data", IsValid=false,Status = ExceptionCode.Success, Data = Mapper.Map<ReviewGetDto>(obj) };

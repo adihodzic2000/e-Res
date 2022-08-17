@@ -5,6 +5,8 @@ using Common.Dto.Company;
 using Common.Dto.Country;
 using Common.Dto.Guests;
 using Common.Dto.Images;
+using Common.Dto.ReservationServices;
+using Common.Dtos.Bills;
 using Common.Helper;
 using Core.Interfaces;
 using Core.SearchObjects;
@@ -20,11 +22,12 @@ namespace Core.Services
     {
         public readonly ERESContext _dbContext;
         public IMapper Mapper { get; set; }
-
-        public BillService(ERESContext dbContext, IMapper mapper)
+        private IAuthContext authContext { get; set; }
+        public BillService(ERESContext dbContext, IMapper mapper, IAuthContext authContext)
         {
             _dbContext = dbContext;
             Mapper = mapper;
+            this.authContext = authContext;
         }
 
         public async Task<Message> CreateBillAsMessageAsync(BillsCreateDto billsCreateDto, CancellationToken cancellationToken)
@@ -232,7 +235,7 @@ namespace Core.Services
                     return new Message
                     {
                         IsValid = false,
-                        Info = "Bill not found!",
+                        Info = "Račun nije nađen ili je već plaćen",
                         Status = ExceptionCode.NotFound
                     };
                 obj.IsPaid = true;
@@ -241,7 +244,82 @@ namespace Core.Services
                 return new Message
                 {
                     IsValid = true,
-                    Info = "Done!",
+                    Info = "Uspješno plaćanje.",
+                    Status = ExceptionCode.Success
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Message
+                {
+                    IsValid = false,
+                    Info = ex.Message,
+                    Status = ExceptionCode.BadRequest
+                };
+            }
+        }
+
+        public async Task<Message> GetBillsByLoggedUserAsMessageAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var loggedUser = await authContext.GetLoggedUser();
+                var bills = await _dbContext.Bills.Include(x=>x.Company).AsNoTracking().Where(x => x.Reservation.Guest.CreatedByUserId == loggedUser.Id).ToListAsync(cancellationToken);
+                return new Message
+                {
+                    IsValid = true,
+                    Data=Mapper.Map<List<BillsGetDto>>(bills),
+                    Info = "Successfully returned data",
+                    Status = ExceptionCode.Success
+                };
+            }
+            catch(Exception ex)
+            {
+                return new Message
+                {
+                    IsValid = false,
+                    Info = ex.Message,
+                    Status = ExceptionCode.BadRequest
+                };
+            }
+        }
+
+        public async Task<Message> GetBillDetailsAsMessageAsync(Guid Id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var loggedUser = await authContext.GetLoggedUser();
+                var bill = await _dbContext.Bills.Include(x => x.Company).Include(x=>x.Reservation).Include(x=>x.Reservation.Room).AsNoTracking().Where(x => x.Id==Id && !x.IsDeleted).FirstOrDefaultAsync(cancellationToken);
+                var reportData = new ReportDto { 
+                    Name="Noćenje",
+                    Price=bill.Reservation.Room.Price, 
+                    Quantity=(int)((bill.Reservation.DateTo-bill.Reservation.DateFrom).TotalDays), 
+                    TotalAmount= (int)((bill.Reservation.DateTo - bill.Reservation.DateFrom).TotalDays)* bill.Reservation.Room.Price 
+                };
+                var returnList=new List<ReportDto>();
+                returnList.Add(reportData);
+
+                var services = await _dbContext.ReservationServices.Include(x => x.Service).Include(x => x.Reservation).Where(x => x.Reservation.Id == bill.ReservationId && !x.IsDeleted).ToListAsync(cancellationToken);
+
+                var _obj = Mapper.Map<List<ReservationServicesGetDto>>(services);
+
+                foreach(var service in _obj)
+                {
+                    var s = new ReportDto()
+                    {
+                        Name = service.Service.Title,
+                        Price = service.Service.Price,
+                        Quantity = service.Quantity,
+                        TotalAmount = service.Quantity * service.Service.Price
+                    };
+                    returnList.Add(s);  
+                }
+
+                return new Message
+                {
+                    IsValid = true,
+                    Data = returnList,
+                    Info = "Successfully returned data",
                     Status = ExceptionCode.Success
                 };
             }

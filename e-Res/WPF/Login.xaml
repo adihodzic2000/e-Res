@@ -19,7 +19,6 @@
                 <RowDefinition Height="258*"></RowDefinition>
                 <RowDefinition Height="209*"></RowDefinition>
             </Grid.RowDefinitions>
-            <Button Background="Black" Click="Button_Click_1"></Button>
             <Control Grid.Row="3" Grid.RowSpan="4"
                             Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" Background="Transparent" Opacity="0"
                                  x:Name="Spinner" 

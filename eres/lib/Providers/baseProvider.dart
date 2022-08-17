@@ -73,16 +73,15 @@ class BaseProvider<T> with ChangeNotifier {
     }
 
     var uri = Uri.parse(url);
+    try {
+      Map<String, String> headers = createHeaders();
+      var response = await http!.get(uri, headers: headers);
+      if (isValidResponseCode(response)) {
+        var data = jsonDecode(response.body);
 
-    Map<String, String> headers = createHeaders();
-    var response = await http!.get(uri, headers: headers);
-    if (isValidResponseCode(response)) {
-      var data = jsonDecode(response.body);
-
-      return data;
-    } else {
-      throw Exception("Exception... handle this gracefully");
-    }
+        return data;
+      } else {}
+    } catch (error) {}
   }
 
   Future<T?> LogIn(dynamic request) async {
@@ -107,6 +106,21 @@ class BaseProvider<T> with ChangeNotifier {
     }
   }
 
+  Future<T?> insertWithoutToken(dynamic request) async {
+    var url = "$_baseUrl$_endpoint";
+    var uri = Uri.parse(url);
+    var headers1 = {"Content-Type": "application/json"};
+    var jsonRequest = jsonEncode(request);
+    var response = await http!.post(uri, headers: headers1, body: jsonRequest);
+
+    if (isValidResponseCode(response)) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      return null;
+    }
+  }
+
   Future<T?> insert(dynamic request) async {
     var url = "$_baseUrl$_endpoint";
     var uri = Uri.parse(url);
@@ -123,7 +137,7 @@ class BaseProvider<T> with ChangeNotifier {
     }
   }
 
-  Future<T?> update(int id, [dynamic request]) async {
+  Future<T?> update(String id, [dynamic request]) async {
     var url = "$_baseUrl$_endpoint/$id";
     var uri = Uri.parse(url);
 

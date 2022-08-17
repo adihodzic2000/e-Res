@@ -10,9 +10,9 @@ namespace Entities
 {
     public class Guest : BaseEntity
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? PhoneNumber { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string PhoneNumber { get; set; } = "";
 
         [ForeignKey(nameof(CompanyId))]
         public Company? Company { get; set; }

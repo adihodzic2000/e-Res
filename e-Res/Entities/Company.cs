@@ -11,8 +11,8 @@ namespace Entities
     public class Company
     {
         public Guid Id { get; set; }
-        public string? Title { get; set; }
-        public string? Address { get; set; }
+        public string Title { get; set; }
+        public string Address { get; set; }
 
         [ForeignKey(nameof(Logo))]
         public Guid? LogoId { get; set; }

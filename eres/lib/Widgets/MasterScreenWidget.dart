@@ -1,4 +1,5 @@
 import 'package:eres/Screens/HomePage.dart';
+import 'package:eres/Screens/MyProfile.dart';
 import 'package:eres/Widgets/eResDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
@@ -26,10 +27,14 @@ class _MasterScreenWidgetState extends State<MasterScreenWidget> {
       if (index == 0) {
         Navigator.popAndPushNamed(context, HomePage.routeName);
       } else {
-        // Notifications();
-        // Navigator.popAndPushNamed(context, Notifications.routeName);
+        Navigator.popAndPushNamed(context, MyProfile.routeName);
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override

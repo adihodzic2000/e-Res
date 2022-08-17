@@ -1,4 +1,5 @@
 ﻿using Common.Dto.Company;
+using Common.Dtos.Chat;
 using Core;
 using MaterialDesignThemes.Wpf;
 using Newtonsoft.Json;
@@ -53,13 +54,27 @@ namespace WPF
             {
                 MessageBox.Show("Greška prilikom preuzimanja podataka o kompaniji");
             }
+            string messagesNumber = "";
+            try
+            {
+
+                var data2 = await APIService.Get("Chat/get-unclicked-messages");
+                var jsonResult2 = JsonConvert.DeserializeObject(data2.Data.ToString()).ToString();
+                var x = JsonConvert.DeserializeObject<List<GetMessageDto>>(jsonResult2);
+                if (x.Count() > 0)
+                    messagesNumber = " (" + x.Count() + ")";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Greška prilikom preuzimanja podataka o porukama koje niste vidjeli");
+            }
             Menu.Children.Add(new UserControlMenuItem(new ItemMenu(Categories.Home, "Početna", PackIconKind.Home)));
             Menu.Children.Add(new UserControlMenuItem(new ItemMenu(Categories.Guests, "Gosti", PackIconKind.GuestRoom)));
             Menu.Children.Add(new UserControlMenuItem(new ItemMenu(Categories.Services, "Usluge", PackIconKind.ServiceToolbox)));
             Menu.Children.Add(new UserControlMenuItem(new ItemMenu(Categories.Calendar, "Kalendar", PackIconKind.Calendar)));
-                Menu.Children.Add(new UserControlMenuItem(new ItemMenu(Categories.Rooms, "Sobe", PackIconKind.RoomService)));
+            Menu.Children.Add(new UserControlMenuItem(new ItemMenu(Categories.Rooms, $"Sobe", PackIconKind.RoomService)));
             Menu.Children.Add(new UserControlMenuItem(new ItemMenu(Categories.Bills, "Računi", PackIconKind.AttachMoney)));
-            Menu.Children.Add(new UserControlMenuItem(new ItemMenu(Categories.Chat, "Chat", PackIconKind.Chat)));
+            Menu.Children.Add(new UserControlMenuItem(new ItemMenu(Categories.Chat, $"Chat{messagesNumber}", PackIconKind.Chat)));
             Menu.Children.Add(new UserControlMenuItem(new ItemMenu(Categories.EditProfile, "Uredi profil", PackIconKind.Company)));
 
 
@@ -67,7 +82,7 @@ namespace WPF
             Dashboard frmDashboard = new Dashboard();
             Child.Children.Add(frmDashboard);
         }
-        private void Menu_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private async void Menu_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             var dataContext = ((ItemMenu)((FrameworkElement)e.OriginalSource).DataContext);
             if (dataContext.Category == Categories.Guests)
@@ -120,6 +135,26 @@ namespace WPF
             }
             else
                 Child.Children.Clear();
+
+            try
+            {
+                string messagesNumber = "";
+
+                var data2 = await APIService.Get("Chat/get-unclicked-messages");
+                var jsonResult2 = JsonConvert.DeserializeObject(data2.Data.ToString()).ToString();
+                var x = JsonConvert.DeserializeObject<List<GetMessageDto>>(jsonResult2);
+                if (x.Count() > 0)
+                {
+                    messagesNumber = " (" + x.Count() + ")";
+                    //Menu.Children[6] = new UserControlMenuItem(new ItemMenu(Categories.Chat, $"Chat{messagesNumber}", PackIconKind.Chat));
+                }
+                var child = ((UserControlMenuItem)Menu.Children[6]).DataContext;
+                ((ItemMenu)child).Header = $"Chat{messagesNumber}";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Greška prilikom preuzimanja podataka o porukama koje niste vidjeli");
+            }
 
         }
 

@@ -31,12 +31,18 @@
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="95*"></ColumnDefinition>
+                    <ColumnDefinition Width="20*"></ColumnDefinition>
                     <ColumnDefinition Width="275*"></ColumnDefinition>
-                    <ColumnDefinition Width="96*"></ColumnDefinition>
+                    <ColumnDefinition Width="20*"></ColumnDefinition>
+                    <ColumnDefinition Width="275*"></ColumnDefinition>
+                    <ColumnDefinition Width="20*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Image Grid.Column="1" Grid.RowSpan="2" Source="/Assets/unnamed.png" Name="logoImage" ></Image>
                 <Button Content="Izmjeni logo" Height="40" Grid.Column="1" Grid.Row="2" Background="#36e33c" Click="Button_Click"></Button>
+                
+                <Image Grid.Column="3" Grid.RowSpan="2" Source="/Assets/unnamed.png" Name="myProfileImage" ></Image>
+                <Button Content="Izmjeni profilnu sliku" Height="40" Grid.Column="3" Grid.Row="2" Background="#36e33c" Click="myProfileImageButton_Click"></Button>
+            
             </Grid>
             <Button Grid.Row="2" Grid.Column="1" Content="SAČUVAJ" Click="Button_Click_1" Background="Orange"></Button>
 

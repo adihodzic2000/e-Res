@@ -1,8 +1,12 @@
+import 'package:eres/Screens/Bills.dart';
+import 'package:eres/Screens/ChatUsers.dart';
 import 'package:eres/Screens/HomePage.dart';
+import 'package:eres/Screens/MyPlaces.dart';
+import 'package:eres/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
-
+import 'package:provider/provider.dart';
 import '../Providers/baseProvider.dart';
 
 class eResDrawer extends StatefulWidget {
@@ -13,6 +17,29 @@ class eResDrawer extends StatefulWidget {
 }
 
 class _eResDrawerState extends State<eResDrawer> {
+  late BaseProvider baseProvider;
+  late String MessagesNumber = '';
+
+  @override
+  void initState() {
+    baseProvider = context.read<BaseProvider>();
+    getMessagesNumber();
+    super.initState();
+  }
+
+  Future getMessagesNumber() async {
+    baseProvider.setEndPoint("/api/Chat/get-unclicked-messages");
+    var tmpData = await baseProvider.get();
+    if (tmpData != null) {
+      if (mounted) {
+        setState(() {
+          if (tmpData['data'].length > 0)
+            MessagesNumber = " (" + tmpData['data'].length.toString() + ")";
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -27,8 +54,9 @@ class _eResDrawerState extends State<eResDrawer> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(100),
-                  child: Image.asset(
-                    'assets/images/empty.jpg',
+                  child: Image.network(
+                    BaseProvider.GetUrl() +
+                        BaseProvider.userData['profileImagePath'],
                     width: 50,
                     height: 50,
                     fit: BoxFit.fill,
@@ -38,7 +66,9 @@ class _eResDrawerState extends State<eResDrawer> {
                   width: 10,
                 ),
                 Text(
-                  "Adi" + " " + "Hodzic",
+                  BaseProvider.userData['firstName'] +
+                      " " +
+                      BaseProvider.userData['lastName'],
                   style: TextStyle(color: Colors.white),
                 ),
               ],
@@ -103,16 +133,13 @@ class _eResDrawerState extends State<eResDrawer> {
           //   },
           // ),
           ListTile(
-            leading: Icon(
-              color: Colors.white,
-              Icons.payment,
-            ),
+            leading: Icon(color: Colors.white, Icons.payment),
             title: Text(
               'Računi',
               style: TextStyle(color: Colors.white),
             ),
             onTap: () {
-              // Navigator.popAndPushNamed(context, MySchedule.routeName);
+              Navigator.pushNamed(context, Bills.routeName);
             },
           ),
           ListTile(
@@ -125,7 +152,7 @@ class _eResDrawerState extends State<eResDrawer> {
               style: TextStyle(color: Colors.white),
             ),
             onTap: () {
-              //  Navigator.popAndPushNamed(context, MyMembership.routeName);
+              Navigator.popAndPushNamed(context, MyPlaces.routeName);
             },
           ),
           ListTile(
@@ -134,11 +161,11 @@ class _eResDrawerState extends State<eResDrawer> {
               Icons.chat,
             ),
             title: Text(
-              'CHAT',
+              'CHAT' + MessagesNumber,
               style: TextStyle(color: Colors.white),
             ),
             onTap: () {
-              //  Navigator.popAndPushNamed(context, MyMembership.routeName);
+              Navigator.popAndPushNamed(context, ChatUsers.routeName);
             },
           ),
           ListTile(
@@ -152,7 +179,9 @@ class _eResDrawerState extends State<eResDrawer> {
               style: TextStyle(color: Colors.white),
             ),
             onTap: () {
-              //  Navigator.popAndPushNamed(context, MyHomePage.routeName);
+              BaseProvider.token = "";
+              BaseProvider.userData = "";
+              Navigator.popAndPushNamed(context, MyHomePage.routeName);
             },
           ),
         ],

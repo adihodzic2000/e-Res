@@ -10,11 +10,10 @@ namespace Entities
 {
     public class CreditCard : BaseEntity
     {
-        public string? CreditNumber { get; set; }//encode 64
+        [ForeignKey(nameof(Bill))]
+        public Guid BillId { get; set; }
+        public Bill Bill{ get; set; }
 
-        [ForeignKey(nameof(Reservation))]
-        public Guid ReservationId { get; set; }
-        public Reservation? Reservation { get; set; }
 
     }
 }

@@ -10,8 +10,8 @@ namespace Entities
 {
     public class Location : BaseEntity
     {
-        public string? Longitude { get; set; }
-        public string? Latitude { get; set; }
+        public string Longitude { get; set; }
+        public string Latitude { get; set; }
 
         [ForeignKey(nameof(CityId))]
         public City? City { get; set; }

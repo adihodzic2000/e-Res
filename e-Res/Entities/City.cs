@@ -10,10 +10,10 @@ namespace Entities
 {
     public class City : BaseEntity
     {
-        public string? Title { get; set; }
+        public string Title { get; set; }
 
         [ForeignKey(nameof(CountryId))]
-        public Country? Country { get; set; }
+        public Country Country { get; set; }
         public Guid CountryId { get; set; }
     }
 }

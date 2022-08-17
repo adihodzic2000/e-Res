@@ -18,7 +18,7 @@ namespace e_Res.Controllers
         {
             this._userService = _userService;
         }
-        [HttpPost, Authorize(Roles = "Admin")]
+        [HttpPost, AllowAnonymous]
         public async Task<IActionResult> CreateUserAsMessageAsync(UserCreateDto userCreateDto, CancellationToken cancellationToken)
         {
             var message = await _userService.CreateUserAsMessageAsync(userCreateDto, cancellationToken);
@@ -30,6 +30,30 @@ namespace e_Res.Controllers
         public async Task<IActionResult> GetUsersAsMessageAsync(CancellationToken cancellationToken)
         {
             var message = await _userService.GetUsersAsMessageAsync(cancellationToken);
+            if (message.IsValid == false)
+                return BadRequest(message);
+            return Ok(message);
+        }
+        [HttpPut("update-user/{Id}"), Authorize()]
+        public async Task<IActionResult> UpdateUserAsMessageAsync(Guid Id, UserUpdateDto user, CancellationToken cancellationToken)
+        {
+            var message = await _userService.UpdateUserAsMessageAsync(Id, user, cancellationToken);
+            if (message.IsValid == false)
+                return BadRequest(message);
+            return Ok(message);
+        }
+        [HttpGet("get-user/{Id}"), Authorize()]
+        public async Task<IActionResult> CheckUserAsMessageAsync(Guid Id, CancellationToken cancellationToken)
+        {
+            var message = await _userService.CheckUserAsMessageAsync(Id, cancellationToken);
+            if (message.IsValid == false)
+                return BadRequest(message);
+            return Ok(message);
+        }
+        [HttpGet("get-my-places"), Authorize()]
+        public async Task<IActionResult> GetMyPlacesAsMessageAsync(CancellationToken cancellationToken)
+        {
+            var message = await _userService.GetMyPlacesAsMessageAsync(cancellationToken);
             if (message.IsValid == false)
                 return BadRequest(message);
             return Ok(message);

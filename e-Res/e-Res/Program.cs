@@ -88,20 +88,19 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IRoleService, RoleService>();
 builder.Services.AddTransient<IAuthService, AuthService>();
 builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<IServicesService, ServicesService>();
 builder.Services.AddTransient<ICityService, CityService>();
-builder.Services.AddTransient<IGuestsService, GuestsService>();
 builder.Services.AddTransient<IRoomService, RoomService>();
-builder.Services.AddTransient<ILocationService, LocationService>();
 builder.Services.AddTransient<IChatService, ChatService>();
-builder.Services.AddTransient<IReservationService, ReservationService>();
 builder.Services.AddTransient<IBillService, BillService>();
+builder.Services.AddTransient<IGuestsService, GuestsService>();
 builder.Services.AddTransient<ICompanyService, CompanyService>();
-builder.Services.AddTransient<IFileService, Core.Services.FileService>();
 builder.Services.AddTransient<ICompanyService, CompanyService>();
 builder.Services.AddTransient<ICountryService, CountryService>();
-builder.Services.AddTransient<IPaymentService, PaymentService>();
 builder.Services.AddTransient<IAuthContext, AuthContextService>();
+builder.Services.AddTransient<IServicesService, ServicesService>();
+builder.Services.AddTransient<ILocationService, LocationService>();
+builder.Services.AddTransient<IFileService, Core.Services.FileService>();
+builder.Services.AddTransient<IReservationService, ReservationService>();
 builder.Services.AddAutoMapper(typeof(IFileService));
 
 

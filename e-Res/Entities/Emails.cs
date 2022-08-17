@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public class Emails : BaseEntity
+    public class Emails
     {
-        public string? Title { get; set; }
-        public string? Content { get; set; }
+        public Guid Id { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
 
         [ForeignKey(nameof(User))]
         public Guid UserId { get; set; }

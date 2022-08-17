@@ -19,6 +19,7 @@ namespace Core.Interfaces
         Task<Message> GetBillsByCompanyIdAsMessageAsync(SearchObject searchObject, CancellationToken cancellationToken);
         Task<Message> GetBillsByGuestIdAsMessageAsync(Guid billId, CancellationToken cancellationToken);
         Task<Message> PayBillAsMessageAsync(BillsPayDto billsPayDto, CancellationToken cancellationToken);
-
+        Task<Message> GetBillsByLoggedUserAsMessageAsync(CancellationToken cancellationToken);
+        Task<Message> GetBillDetailsAsMessageAsync(Guid Id, CancellationToken cancellationToken);
     }
 }

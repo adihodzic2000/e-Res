@@ -49,6 +49,12 @@ class MyCustomFormState extends State<MyCustomFormText> {
                 color: Colors.white,
               ),
             ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red),
+            ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.white,

@@ -1,4 +1,5 @@
 ﻿using Common.Dto.Company;
+using Common.Dto.Images;
 using Entities.Enums;
 using System;
 using System.Collections.Generic;
@@ -18,5 +19,6 @@ namespace Common.Dto.User
         public string? Email { get; set; }
         public Gender Gender { get; set; }
         public CompanyGetDto Company { get; set; }
+        public ImageGetDto Image { get; set; }
     }
 }

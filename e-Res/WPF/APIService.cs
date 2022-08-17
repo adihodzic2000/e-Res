@@ -49,10 +49,9 @@ namespace WPF
 
             return result;
         }
-        public async Task DeleteById( string _resource, Guid id)
+        public async Task DeleteById(string _resource, Guid id)
         {
             var result = await $"{_endpoint}{_resource}/{id}".WithHeader("Authorization", Token).DeleteAsync();
-
         }
 
         public async Task<T> Post<T>(string _resource, object request)
@@ -77,7 +76,7 @@ namespace WPF
             }
 
         }
-       
+
         public async Task<Core.Message> Put(string _resource, object id, object request)
         {
             var result = await $"{_endpoint}{_resource}/{id}".WithHeader("Authorization", Token).PutJsonAsync(request).ReceiveJson<Core.Message>();

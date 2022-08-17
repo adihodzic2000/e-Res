@@ -106,20 +106,6 @@ namespace WPF
             Mouse.OverrideCursor = Cursors.Arrow;
         }
 
-        private async void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-              
-               // var n = await APIService.PostPayment<dynamic>(loginDto);
-
-
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Pogrijesili ste korisničko ime ili lozinku!");
-            }
-        }
+       
     }
 }

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Common.Dto.Company;
+using Common.Dto.Images;
 using Common.Dto.User;
 using Common.Dtos.Verification;
 using Core.Interfaces;
@@ -21,12 +23,14 @@ namespace Core.Services
         public readonly ERESContext _dbContext;
         private UserManager<User> UserManager { get; set; }
         public IMapper Mapper { get; set; }
+        public IAuthContext authContext { get; set; }
 
-        public UserService(ERESContext dbContext, UserManager<User> userManager, IMapper mapper)
+        public UserService(ERESContext dbContext, UserManager<User> userManager, IMapper mapper, IAuthContext authContext)
         {
             _dbContext = dbContext;
             UserManager = userManager;
             Mapper = mapper;
+            this.authContext = authContext;
         }
 
         public async Task<Message> CreateUserAsMessageAsync(UserCreateDto userCreateDto, CancellationToken cancellationToken)
@@ -75,7 +79,22 @@ namespace Core.Services
 
                     await UserManager.AddToRolesAsync(user, roles.Select(x => x.NormalizedName));
 
+                    var file = new ImageCreateDto
+                    {
+                        Path = "/Uploads/Images/00caa4b0-1903-41b5-a8d0-e7a293e48283.jpg",
+                        IsDeleted = false,
+                        CreatedDate = DateTime.Now,
+                        CreatedByUserId = user.Id,
+                        ModifiedByUserId = user.Id,
+                        UserProfilePictureId = user.Id
+                    };
+                    var obj = Mapper.Map<Images>(file);
+                    await _dbContext.Images.AddAsync(obj);
+                    await _dbContext.SaveChangesAsync(cancellationToken);
+
                     await transaction.CommitAsync(cancellationToken);
+
+
                     return new Message { Info = "Successfully created user", IsValid = true, Status = status };
                 }
                 catch (Exception ex)
@@ -189,7 +208,7 @@ namespace Core.Services
                 var code = guid.Substring(0, 6);
                 Verifications verification = new Verifications()
                 {
-                    Id=Guid.NewGuid(),
+                    Id = Guid.NewGuid(),
                     Code = code,
                     ExpireDate = DateTime.Now.AddMinutes(30),
                     IsConfirmed = false,
@@ -197,9 +216,14 @@ namespace Core.Services
                 };
                 await _dbContext.Verifications.AddAsync(verification);
                 await _dbContext.SaveChangesAsync(cancellationToken);
-                bool n=_SendMail(verificationCreateDto.Email, "Verifikacijski kod", code);
-                if(n)
-                return new Message { Info = "Uspješno vraćen kod", IsValid = true, Status = ExceptionCode.Success };
+                bool n = _SendMail(verificationCreateDto.Email, "Verifikacijski kod", code);
+                if (n)
+                {
+                    Emails Email = new Emails { Content = "VERIFIKACIJSKI KOD", Title = code, Id = Guid.NewGuid(), UserId = user.Id };
+                    await _dbContext.AddAsync(Email);
+                    await _dbContext.SaveChangesAsync(cancellationToken);
+                    return new Message { Info = "Uspješno vraćen kod", IsValid = true, Status = ExceptionCode.Success };
+                }
                 else return new Message { Info = "Greška", IsValid = false, Status = ExceptionCode.BadRequest };
 
             }
@@ -214,13 +238,13 @@ namespace Core.Services
             try
             {
                 var verification = await _dbContext.Verifications.Include(x => x.User).Where(x => x.Code == verificationCodeDto.Code && x.User.Email == verificationCodeDto.Email && !x.IsConfirmed).FirstOrDefaultAsync();
-                if(verification == null)
+                if (verification == null)
                     return new Message { Info = "Greška", IsValid = false, Status = ExceptionCode.BadRequest };
                 else
                 {
                     verification.IsConfirmed = true;
                     await _dbContext.SaveChangesAsync(cancellationToken);
-                    return new Message { Info = "Uspješno potvrđen kod", Data=verification.UserId, IsValid = true, Status = ExceptionCode.Success };
+                    return new Message { Info = "Uspješno potvrđen kod", Data = verification.UserId, IsValid = true, Status = ExceptionCode.Success };
                 }
             }
             catch (Exception ex)
@@ -238,9 +262,65 @@ namespace Core.Services
                 await UserManager.AddPasswordAsync(user, newPasswordDto.Password);
                 return new Message { Info = "Uspješno izmjenjena šifra", IsValid = true, Status = ExceptionCode.Success };
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return new Message { Info = "Greška", IsValid = false, Status = ExceptionCode.BadRequest };
+            }
+        }
+
+        public async Task<Message> CheckUserAsMessageAsync(Guid Id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var user = await _dbContext.Users.Where(x => x.Id == Id && !x.IsDeleted).FirstOrDefaultAsync();
+                if (user == null)
+                    user = await _dbContext.Users.Where(x => x.CompanyId == Id && !x.IsDeleted).FirstOrDefaultAsync();
+                return new Message { Info = "Uspješno vraćen korisnik", Data = user.Id, IsValid = true, Status = ExceptionCode.Success };
+
+            }
+            catch (Exception ex)
+            {
+                return new Message { Info = "Greška", IsValid = false, Status = ExceptionCode.BadRequest };
+            }
+        }
+
+        public async Task<Message> GetMyPlacesAsMessageAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var loggedUser = await authContext.GetLoggedUser();
+                var places = await _dbContext.Bills
+                      .Include(x => x.Company)
+                      .Include(x => x.Company.Logo)
+                      .Include(x => x.Reservation)
+                      .Include(x => x.Reservation.Guest)
+                      .Where(x => x.Reservation.Guest.CreatedByUserId == loggedUser.Id).Select(x => x.Reservation.Room.Company).Distinct().Include(x => x.Logo).ToListAsync(cancellationToken);
+                var companies = Mapper.Map<List<CompanyGetDto>>(places);
+                return new Message { Info = "Uspješno vraćeni podaci", Data = companies, IsValid = true, Status = ExceptionCode.Success };
+            }
+            catch (Exception ex)
+            {
+                return new Message { Info = "Greška", IsValid = false, Status = ExceptionCode.BadRequest };
+            }
+        }
+
+        public async Task<Message> UpdateUserAsMessageAsync(Guid Id, UserUpdateDto user, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var _user = await _dbContext.Users.Where(x => x.Id == Id && !x.IsDeleted).FirstOrDefaultAsync(cancellationToken);
+                if (_user == null)
+                {
+                    return new Message { Info = "Greška, korisnik ne postoji", IsValid = false, Status = ExceptionCode.BadRequest };
+                }
+                Mapper.Map(user, _user);
+                await _dbContext.SaveChangesAsync(cancellationToken);
+                return new Message { Info = "Uspješno ažuriran korisnik", Data = user, IsValid = true, Status = ExceptionCode.Success };
+
+            }
+            catch (Exception ex)
+            {
+                return new Message { Info = "Greška na serveru", IsValid = false, Status = ExceptionCode.BadRequest };
             }
         }
     }

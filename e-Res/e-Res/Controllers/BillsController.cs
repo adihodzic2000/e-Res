@@ -34,7 +34,7 @@ namespace e_Res.Controllers
                 return BadRequest(message);
             return Ok(message);
         }
-        
+
         [HttpGet("get-bill/{BillId}"), Authorize(Roles = "Desktop")]
         public async Task<IActionResult> GetBillAsMessageAsync(Guid BillId, CancellationToken cancellationToken)
         {
@@ -43,7 +43,23 @@ namespace e_Res.Controllers
                 return BadRequest(message);
             return Ok(message);
         }
-        
+
+        [HttpGet("get-bills-by-logged-user"), Authorize(Roles = "Mobile")]
+        public async Task<IActionResult> GetBillsByLoggedUserAsMessageAsync(CancellationToken cancellationToken)
+        {
+            var message = await _billService.GetBillsByLoggedUserAsMessageAsync(cancellationToken);
+            if (message.IsValid == false)
+                return BadRequest(message);
+            return Ok(message);
+        }
+        [HttpGet("get-bill-details/{BillId}"), Authorize]
+        public async Task<IActionResult> GetBillDetailsAsMessageAsync(Guid BillId, CancellationToken cancellationToken)
+        {
+            var message = await _billService.GetBillDetailsAsMessageAsync(BillId, cancellationToken);
+            if (message.IsValid == false)
+                return BadRequest(message);
+            return Ok(message);
+        }
         [HttpPut("update-bill/{BillId}"), Authorize(Roles = "Desktop")]
         public async Task<IActionResult> UpdateBillAsMessageAsync(Guid BillId, BillsUpdateDto billsUpdateDto, CancellationToken cancellationToken)
         {
@@ -52,7 +68,7 @@ namespace e_Res.Controllers
                 return BadRequest(message);
             return Ok(message);
         }
-        
+
         [HttpDelete("delete-bill/{BillId}"), Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteBillAsMessageAsync(Guid BillId, CancellationToken cancellationToken)
         {
@@ -62,7 +78,7 @@ namespace e_Res.Controllers
             return Ok(message);
         }
 
-        [HttpPost("get-bills-by-company-id"), Authorize(Roles = "Desktop")]
+        [HttpPost("get-bills-by-company-id"), Authorize]
         public async Task<IActionResult> GetBillsByCompanyIdAsMessageAsync(SearchObject searchObject, CancellationToken cancellationToken)
         {
             var message = await _billService.GetBillsByCompanyIdAsMessageAsync(searchObject, cancellationToken);

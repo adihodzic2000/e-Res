@@ -16,9 +16,8 @@ namespace Database
         public DbSet<Chat> Chat { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Company> Companies { get; set; }
-        //public DbSet<CompanyGuests> CompanyGuests { get; set; }
         public DbSet<Country> Countries { get; set; }
-        public DbSet<CreditCard> CreditCards { get; set; }
+        //public DbSet<CreditCard> CreditCards { get; set; }
         public DbSet<Emails> Emails { get; set; }
         public DbSet<Guest> Guests { get; set; }
         public DbSet<Images> Images { get; set; }

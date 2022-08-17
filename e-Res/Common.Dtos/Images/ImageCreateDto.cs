@@ -13,5 +13,6 @@ namespace Common.Dto.Images
         public DateTime CreatedDate { get; set; }
         public Guid CreatedByUserId { get; set; }
         public Guid ModifiedByUserId { get; set; }
+        public Guid? UserProfilePictureId { get; set; }
     }
 }

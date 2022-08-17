@@ -25,7 +25,7 @@ namespace e_Res.Controllers
         }
 
 
-        [HttpPost("add-guest"), Authorize(Roles = "Desktop")]
+        [HttpPost("add-guest"), Authorize]
         public async Task<IActionResult> AddGuestAsMessageAsync(GuestCreateDto guestCreateDto, CancellationToken cancellationToken)
         {
             var message = await _guestsService.CreateGuestAsMessageAsync(guestCreateDto, cancellationToken);
@@ -34,7 +34,7 @@ namespace e_Res.Controllers
             return Ok(message);
         }
         
-        [HttpGet("get-guest"), Authorize(Roles ="Desktop")]
+        [HttpGet("get-guest"), Authorize]
         public async Task<IActionResult> GetGuestAsMessageAsync(Guid Id, CancellationToken cancellationToken)
         {
             var message = await _guestsService.GetGuestAsMessageAsync(Id, cancellationToken);
@@ -43,7 +43,7 @@ namespace e_Res.Controllers
             return Ok(message);
         }
         
-        [HttpPut("update-guest/{Id}"), Authorize(Roles = "Mobile" + "," + "Desktop")]
+        [HttpPut("update-guest/{Id}"), Authorize]
         public async Task<IActionResult> UpdateGuestAsMessageAsync(Guid Id, GuestUpdateDto guestUpdateDto, CancellationToken cancellationToken)
         {
             var message = await _guestsService.UpdateGuestAsMessageAsync(Id, guestUpdateDto, cancellationToken);
@@ -52,7 +52,7 @@ namespace e_Res.Controllers
             return Ok(message);
         }
         
-        [HttpDelete("delete-guest/{Id}"), Authorize(Roles = "Desktop")]
+        [HttpDelete("delete-guest/{Id}"), Authorize]
         public async Task<IActionResult> DeleteGuestAsMessageAsync(Guid Id, CancellationToken cancellationToken)
         {
             var message = await _guestsService.DeleteGuestAsMessageAsync(Id, cancellationToken);
@@ -61,7 +61,7 @@ namespace e_Res.Controllers
             return Ok(message);
         }
 
-        [HttpPost("get-guest-by-company-id"), Authorize(Roles = "Desktop")]
+        [HttpPost("get-guest-by-company-id"), Authorize]
         public async Task<IActionResult> GetGuestByCompanyIdAsMessageAsync(BaseSearchObject baseSearch, CancellationToken cancellationToken)
         {
             var message = await _guestsService.GetGuestByCompanyIdAsMessageAsync(baseSearch, cancellationToken);

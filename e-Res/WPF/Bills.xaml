@@ -120,7 +120,7 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <DockPanel>
-                                    <Button Width="70" Padding="0" Foreground="Green" Click="Button_Click" Content="PLAĆENO" Margin="2" FontSize="11" Background="Transparent"/>
+                                    <Button Width="70" Padding="0" Foreground="Green" Click="Button_Click" Content="PLATI" Margin="2" FontSize="11" Background="Transparent"/>
                                     <Button Width="70" Padding="0"   Foreground="Red" Click="Button_Click_1" Content="PRINTAJ" Margin="2" FontSize="11" Background="Transparent"/>
                                 </DockPanel>
                             </DataTemplate>

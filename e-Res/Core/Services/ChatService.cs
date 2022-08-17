@@ -14,6 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using Common.Dto.Guests;
 using Common.Dtos.Chat;
 using Common.Dto.User;
+using Core.SearchObjects;
+using System.Net.Mail;
+using System.Text;
 
 namespace Core.Services
 {
@@ -30,11 +33,36 @@ namespace Core.Services
             Mapper = mapper;
             this.authContext = authContext;
         }
+        public bool _SendMail(string To, string Subject, string Sadrzaj)
+        {
+            MailMessage message = new MailMessage("mverifikacija@gmail.com", To);
+            message.Subject = Subject;
+            message.Body = Sadrzaj;
+            message.BodyEncoding = Encoding.UTF8;
+            message.IsBodyHtml = true;
+            SmtpClient client = new SmtpClient("smtp.gmail.com", 587); //Gmail smtp    
+            System.Net.NetworkCredential basicCredential1 = new
+            System.Net.NetworkCredential("mverifikacija@gmail.com", "kvajdweznozeynay");
+            client.EnableSsl = true;
+            client.UseDefaultCredentials = false;
+            client.Credentials = basicCredential1;
 
+            try
+            {
+                client.Send(message);
+                return true;
+            }
+
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         public async Task<Message> CreateMessageAsMessageAsync(CreateMessageDto createMessageDto, CancellationToken cancellationToken)
         {
             try
             {
+                var userFrom = await _dbContext.Users.Where(x => x.Id == createMessageDto.UserFromId && !x.IsDeleted).FirstOrDefaultAsync(cancellationToken);
                 var checkedUser = await _dbContext.Users.Where(x => x.Id == createMessageDto.UserToId).FirstOrDefaultAsync(cancellationToken);
                 if (checkedUser == null)
                 {
@@ -50,6 +78,7 @@ namespace Core.Services
                     };
                 }
                 createMessageDto.UserToId = checkedUser.Id;
+                bool mailValid = _SendMail(checkedUser.Email, "Imate novu poruku od korisnika: " + userFrom.FirstName + " " + userFrom.LastName, createMessageDto.Content);
 
                 var obj = Mapper.Map<Chat>(createMessageDto);
                 obj.CreatedDate = DateTime.Now;
@@ -62,7 +91,7 @@ namespace Core.Services
                     IsValid = true,
                     Info = "Successfully added message",
                     Status = ExceptionCode.Success,
-                    Data = obj
+                    Data = null
                 };
             }
             catch (Exception ex)
@@ -88,21 +117,20 @@ namespace Core.Services
                     .OrderByDescending(x => x.CreatedDate)
                     .ToListAsync(cancellationToken);
 
-                if (chat != null)
+                var realObjs = Mapper.Map<List<GetMessageDto>>(chat);
+                var image = await _dbContext.Images.Where(x => x.UserProfilePictureId == realObjs[0].UserFromId && !x.IsDeleted).FirstOrDefaultAsync(cancellationToken);
+                var mappedImage = Mapper.Map<ImageGetDto>(image);
+                foreach (var obj in realObjs)
                 {
-                    var obj = Mapper.Map<List<GetMessageDto>>(chat);
-                    return new Message
-                    {
-                        IsValid = true,
-                        Info = "Successfully got messages",
-                        Status = ExceptionCode.Success,
-                        Data = obj
-                    };
+                    obj.UserFrom.Image = mappedImage;
                 }
+
                 return new Message
                 {
                     IsValid = true,
-                    Status = ExceptionCode.Success
+                    Info = "Successfully got messages",
+                    Status = ExceptionCode.Success,
+                    Data = realObjs
                 };
             }
             catch (Exception ex)
@@ -116,12 +144,29 @@ namespace Core.Services
             }
         }
 
-        public async Task<Message> GetMyUsersAsMessageAsync(CancellationToken cancellationToken)
+        public async Task<Message> GetMyUsersAsMessageAsync(SearchByName search, CancellationToken cancellationToken)
         {
             try
             {
                 var loggedUser = await authContext.GetLoggedUser();
-                var chats = await _dbContext.Chat.Include(x => x.UserFrom).Include(x => x.UserTo).AsNoTracking().Where(x => x.UserFromId == loggedUser.Id || x.UserToId == loggedUser.Id).ToListAsync(cancellationToken);
+                var chats = await _dbContext.Chat
+                    .Include(x => x.UserFrom)
+                    .Include(x => x.UserTo)
+                    .Include(x => x.UserTo.Company)
+                    .AsNoTracking()
+                    .Where(x =>
+                    ((x.UserFrom.IsDeleted == false &&
+                     x.UserFromId == loggedUser.Id)
+
+                    ||
+
+                    (x.UserTo.IsDeleted == false
+
+                    && x.UserToId == loggedUser.Id))
+
+                    && ((((x.UserFrom.FirstName + " " + x.UserFrom.LastName).ToLower().Contains(search.Name.ToLower())) ||
+                    ((x.UserFrom.LastName + " " + x.UserFrom.FirstName).ToLower().Contains(search.Name.ToLower())) || (((x.UserTo.FirstName + " " + x.UserTo.LastName).ToLower().Contains(search.Name.ToLower())) ||
+                    ((x.UserTo.LastName + " " + x.UserTo.FirstName).ToLower().Contains(search.Name.ToLower())))))).ToListAsync(cancellationToken);
 
                 List<User> users = new List<User>();
                 foreach (var chat in chats)
@@ -145,12 +190,18 @@ namespace Core.Services
                     if (!found)
                         users.Add(user);
                 }
+                var realObjs = Mapper.Map<List<UserGetDto>>(users);
+                foreach (var user in realObjs)
+                {
+                    user.Image = Mapper.Map<ImageGetDto>(await _dbContext.Images.Where(x => x.UserProfilePictureId == user.Id && !x.IsDeleted).FirstOrDefaultAsync(cancellationToken));
+                }
+
                 return new Message
                 {
                     IsValid = true,
                     Info = "Successfully got users",
                     Status = ExceptionCode.Success,
-                    Data = Mapper.Map<List<UserGetDto>>(users)
+                    Data = realObjs
                 };
             }
             catch (Exception ex)
@@ -164,14 +215,13 @@ namespace Core.Services
             }
         }
 
-      
-
         public async Task<Message> GetUnSeenMessagesAsMessageAsync(CancellationToken cancellationToken)
         {
             try
             {
                 var loggedUser = await authContext.GetLoggedUser();
-                var chats = await _dbContext.Chat.Where(x => x.UserToId == loggedUser.Id && !x.Seen && !x.IsDeleted).ToListAsync(cancellationToken);
+                var chats = await _dbContext.Chat.Include(x => x.UserFrom)
+                    .Include(x => x.UserTo).Where(x => x.UserToId == loggedUser.Id && !x.Seen && !x.IsDeleted).ToListAsync(cancellationToken);
 
                 foreach (var chat in chats)
                 {
@@ -184,6 +234,63 @@ namespace Core.Services
                     Info = "Successfully got messages",
                     Status = ExceptionCode.Success,
                     Data = Mapper.Map<List<GetMessageDto>>(chats)
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Message
+                {
+                    IsValid = false,
+                    Info = ex.Message,
+                    Status = ExceptionCode.BadRequest
+                };
+            }
+        }
+
+        public async Task<Message> GetUnClickedMessagesAsMessageAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var loggedUser = await authContext.GetLoggedUser();
+                var chats = await _dbContext.Chat.Include(x => x.UserFrom)
+                    .Include(x => x.UserTo).Where(x => x.UserToId == loggedUser.Id && !x.Clicked && !x.IsDeleted).ToListAsync(cancellationToken);
+
+                return new Message
+                {
+                    IsValid = true,
+                    Info = "Successfully got messages",
+                    Status = ExceptionCode.Success,
+                    Data = Mapper.Map<List<GetMessageDto>>(chats)
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Message
+                {
+                    IsValid = false,
+                    Info = ex.Message,
+                    Status = ExceptionCode.BadRequest
+                };
+            }
+        }
+
+        public async Task<Message> SeeUnClickedMessagesAsMessageAsync(Guid Id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var loggedUser = await authContext.GetLoggedUser();
+                var chat = await _dbContext.Chat.Where(x => x.UserToId == loggedUser.Id && x.UserFromId == Id && !x.Clicked && !x.IsDeleted).ToListAsync(cancellationToken);
+                foreach (var message in chat)
+                {
+                    message.Clicked = true;
+                }
+                await _dbContext.SaveChangesAsync(cancellationToken);
+                return new Message
+                {
+                    IsValid = true,
+                    Info = "Done!",
+                    Status = ExceptionCode.Success,
+                    Data = Mapper.Map<List<GetMessageDto>>(chat)
                 };
             }
             catch (Exception ex)

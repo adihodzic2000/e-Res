@@ -86,6 +86,7 @@ namespace Core.Services
 
             //================USERS===================
             CreateMap<UserCreateDto, User>();
+            CreateMap<UserUpdateDto, User>();
             CreateMap<User, UserGetDto>();
             //========================================
 

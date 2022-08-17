@@ -55,24 +55,28 @@ class _HomePageState extends State<HomePage> {
             "/" +
             isHotel.toString());
     var tmpData = await _baseProvider.get();
-    setState(() {
-      companies = tmpData['data'];
-    });
+    if (mounted) {
+      setState(() {
+        companies = tmpData['data'];
+      });
+    }
   }
 
   Future loadCountries() async {
     _baseProvider.setEndPoint("/api/Country/get-countries");
     var tmpData = await _baseProvider.get();
-    setState(() {
-      countries.clear();
-      countries.add(Country(
-          title: "SVE DRŽAVE", id: "00000000-0000-0000-0000-000000000000"));
-      countries.addAll(tmpData['data']
-          .map((x) => Country.fromJson(x))
-          .cast<Country>()
-          .toList());
-      selectedCountry = countries[0];
-    });
+    if (mounted) {
+      setState(() {
+        countries.clear();
+        countries.add(Country(
+            title: "SVE DRŽAVE", id: "00000000-0000-0000-0000-000000000000"));
+        countries.addAll(tmpData['data']
+            .map((x) => Country.fromJson(x))
+            .cast<Country>()
+            .toList());
+        selectedCountry = countries[0];
+      });
+    }
     loadCities();
   }
 
@@ -80,18 +84,20 @@ class _HomePageState extends State<HomePage> {
     _baseProvider.setEndPoint(
         "/api/City/get-cities-by-country-id/${selectedCountry?.id}");
     var tmpData = await _baseProvider.get();
-    setState(() {
-      cities.clear();
-      cities.add(City(
-          title: "SVI GRADOVI", id: "00000000-0000-0000-0000-000000000000"));
+    if (mounted) {
+      setState(() {
+        cities.clear();
+        cities.add(City(
+            title: "SVI GRADOVI", id: "00000000-0000-0000-0000-000000000000"));
 
-      cities.addAll(
-          tmpData['data'].map((x) => City.fromJson(x)).cast<City>().toList());
-      if (cities.length > 0) {
-        selectedCity = cities[0];
-      }
-    });
-    loadData();
+        cities.addAll(
+            tmpData['data'].map((x) => City.fromJson(x)).cast<City>().toList());
+        if (cities.length > 0) {
+          selectedCity = cities[0];
+        }
+      });
+      loadData();
+    }
   }
 
   @override
@@ -152,24 +158,6 @@ class _HomePageState extends State<HomePage> {
                             }).toList())
                       ],
                     ))),
-                // Visibility(
-                //   visible: widget.IsVisibleFiltering && !isPressedButtonHide,
-                //   child: Container(
-                //     margin: EdgeInsets.all(10),
-                //     child: MyCustomForm("Minimalna cijena", _minPrice, true,
-                //         TextInputType.number,
-                //         IsObsecured: false),
-                //   ),
-                // ),
-                // Visibility(
-                //   visible: widget.IsVisibleFiltering && !isPressedButtonHide,
-                //   child: Container(
-                //     margin: EdgeInsets.all(10),
-                //     child: MyCustomForm("Maksimalna cijena", _maxPrice, true,
-                //         TextInputType.number,
-                //         IsObsecured: false),
-                //   ),
-                // ),
                 Visibility(
                   visible: widget.IsVisibleFiltering && !isPressedButtonHide,
                   child: Row(

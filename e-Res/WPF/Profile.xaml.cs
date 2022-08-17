@@ -19,6 +19,7 @@ using Flurl.Http;
 using Newtonsoft.Json;
 using WPF.Dtos;
 using Message = Core.Message;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace WPF
 {
@@ -29,7 +30,9 @@ namespace WPF
     {
         public APIService service { get; set; } = new APIService();
         public ImageGetDto logo { get; set; }
+        public ImageGetDto profileImageGet { get; set; }
         public System.Drawing.Image currentImage { get; set; }
+        public System.Drawing.Image profileImage { get; set; }
         public Profile()
         {
             InitializeComponent();
@@ -99,6 +102,12 @@ namespace WPF
                 cbCities.SelectedValue = x.Location.City.Id;
                 logo = x.Logo;
                 logoImage.Source = new BitmapImage(new Uri($"{service._endpointImage}{x.Logo.Path}"));
+
+                var data1 = await service.Get("File/get-profile-image");
+                var jsonResult1 = JsonConvert.DeserializeObject(data1.Data.ToString()).ToString();
+                var x1 = JsonConvert.DeserializeObject<ImageGetDto>(jsonResult1);
+                myProfileImage.Source = new BitmapImage(new Uri($"{service._endpointImage}{x1.Path}"));
+                profileImageGet = x1;
             }
             catch (FlurlHttpException ex)
             {
@@ -125,12 +134,22 @@ namespace WPF
         {
             try
             {
-                byte[] im = Globals.FromImageToByte(currentImage);
-                FileUploadDto fileUpload = new FileUploadDto();
-                fileUpload.ImageURL = im;
-                var data1 = await service.Post<Message>("File/upload-image", fileUpload);
-                var jsonResult = JsonConvert.DeserializeObject(data1.Data.ToString()).ToString();
-                logo = JsonConvert.DeserializeObject<ImageGetDto>(jsonResult);
+                if (currentImage != null)
+                {
+                    byte[] im = Globals.FromImageToByte(currentImage);
+                    FileUploadDto fileUpload = new FileUploadDto();
+                    fileUpload.ImageURL = im;
+                    var data1 = await service.Post<Message>("File/upload-image", fileUpload);
+                    var jsonResult = JsonConvert.DeserializeObject(data1.Data.ToString()).ToString();
+                    logo = JsonConvert.DeserializeObject<ImageGetDto>(jsonResult);
+                }
+                if (profileImage != null)
+                {
+                    byte[] im = Globals.FromImageToByte(profileImage);
+                    FileUploadDto fileUpload = new FileUploadDto();
+                    fileUpload.ImageURL = im;
+                    var data1 = await service.Post<Message>("File/upload-profile-image", fileUpload);
+                }
             }
             catch (Exception ex)
             {
@@ -145,18 +164,15 @@ namespace WPF
             companyUpdateDto.LogoId = logo.Id;
             try
             {
-                await service.Put("Company/update-company", APIService.CompanyId, companyUpdateDto);
+                var data = await service.Put("Company/update-company", APIService.CompanyId, companyUpdateDto);
+                await Task.Delay(2000);
+                MessageBox.Show("Uspješno ste spasili postavke!");
+
             }
             catch (FlurlHttpException ex)
             {
-                var error = ex.GetResponseJsonAsync<Core.Message>();
-                System.Windows.MessageBox.Show("Greška");
+
             }
-        }
-
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private async void btnNewPhoto_Click(object sender, RoutedEventArgs e)
@@ -207,8 +223,21 @@ namespace WPF
             if (result == MessageBoxResult.Yes)
             {
 
-                  deleteImage(Id);
-       
+                deleteImage(Id);
+
+            }
+        }
+
+        private void myProfileImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "Image files|*.bmp;*.jpg;*.png";
+            openFile.FilterIndex = 1;
+            if (openFile.ShowDialog() == DialogResult.OK)
+            {
+                myProfileImage.Source = new BitmapImage(new Uri(openFile.FileName));
+                System.Drawing.Image _image = System.Drawing.Image.FromFile(openFile.FileName);
+                profileImage = _image;
             }
         }
     }

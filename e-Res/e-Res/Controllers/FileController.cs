@@ -37,10 +37,26 @@ namespace e_Res.Controllers
                 return BadRequest(message);
             return Ok(message);
         }
+        [HttpPost("upload-profile-image"), Authorize()]
+        public async Task<IActionResult> UploadProfileFileAsMessage(FileUploadDto fileUploadDto, CancellationToken cancellationToken)
+        {
+            var message = await _fileService.ChangeMyProfilePictureAsMessageAsync(fileUploadDto, cancellationToken);
+            if (message.IsValid == false)
+                return BadRequest(message);
+            return Ok(message);
+        }
         [HttpGet("get-images"), Authorize()]
         public async Task<IActionResult> GetFilesByCompany(CancellationToken cancellationToken)
         {
             var message = await _fileService.GetImagesByCompanyAsMessageAsync(cancellationToken);
+            if (message.IsValid == false)
+                return BadRequest(message);
+            return Ok(message);
+        }
+        [HttpGet("get-profile-image"), Authorize()]
+        public async Task<IActionResult> GetProfileImageAsMessageAsync(CancellationToken cancellationToken)
+        {
+            var message = await _fileService.GetProfilePictureAsMessageAsync(cancellationToken);
             if (message.IsValid == false)
                 return BadRequest(message);
             return Ok(message);

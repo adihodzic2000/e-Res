@@ -33,20 +33,24 @@ namespace Core.Services
             try
             {
                 var loggedUser = await authContext.GetLoggedUser();
-                var obj = Mapper.Map<Guest>(guestCreateDto);
-                obj.CreatedDate = DateTime.Now;
-                obj.CreatedByUserId = loggedUser.Id;
-                obj.ModifiedByUserId = loggedUser.Id;
 
-                await _dbContext.Guests.AddAsync(obj);
-                await _dbContext.SaveChangesAsync();
+                var check = await _dbContext.Guests.Where(x => guestCreateDto.CompanyId == x.CompanyId && guestCreateDto.FirstName == x.FirstName && guestCreateDto.LastName == x.LastName && !x.IsDeleted).FirstOrDefaultAsync(cancellationToken);
+                var obj = Mapper.Map<Guest>(guestCreateDto);
+                if (check == null)
+                {
+                    obj.CreatedDate = DateTime.Now;
+                    obj.CreatedByUserId = loggedUser.Id;
+                    obj.ModifiedByUserId = loggedUser.Id;
+                    await _dbContext.Guests.AddAsync(obj);
+                    await _dbContext.SaveChangesAsync();
+                }
 
                 return new Message
                 {
                     IsValid = true,
                     Info = "Successfully added guest",
                     Status = ExceptionCode.Success,
-                    Data = obj.Id
+                    Data = check != null ? check.Id : obj.Id
                 };
             }
             catch (Exception ex)
@@ -96,14 +100,25 @@ namespace Core.Services
             {
                 var loggedUser = await authContext.GetLoggedUser();
 
-                var obj = await _dbContext.Guests.Where(x => x.Id == guestId && loggedUser.CompanyId==x.CompanyId).FirstOrDefaultAsync(cancellationToken);
+                var obj = await _dbContext.Guests.Where(x => x.Id == guestId && loggedUser.CompanyId == x.CompanyId).FirstOrDefaultAsync(cancellationToken);
 
-                if (obj != null)
+                var reservation=await _dbContext.Reservations.Where(x=>x.GuestId == guestId && !x.IsDeleted).FirstOrDefaultAsync(cancellationToken);
+
+                if (reservation != null)
                 {
+                    return new Message
+                    {
+                        IsValid = false,
+                        Info = "Moguće je samo obrisati goste koji nemaju rezervaciju",
+                        Status = ExceptionCode.BadRequest
+                    };
+                }
 
-                obj.IsDeleted = true;
-                obj.ModifiedByUserId= loggedUser.Id;
-                await _dbContext.SaveChangesAsync(cancellationToken);
+                if (obj != null )
+                {
+                    obj.IsDeleted = true;
+                    obj.ModifiedByUserId = loggedUser.Id;
+                    await _dbContext.SaveChangesAsync(cancellationToken);
                 }
 
                 return new Message

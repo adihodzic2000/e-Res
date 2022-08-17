@@ -62,13 +62,14 @@ namespace WPF
             try
             {
                 await APIService.DeleteById("Guest/delete-guest", Id);
+               
                 MessageBox.Show("Uspješno obrisan gost");
                 loadGuests();
             }
             catch (FlurlHttpException ex)
             {
                 var error = ex.GetResponseJsonAsync<Message>();
-                throw new InvalidOperationException(error.Result.Info);
+                MessageBox.Show(error.Result.Info);
             }
         }
         private void Button_Click(object sender, RoutedEventArgs e)

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:eres/Models/Room.dart';
 import 'package:eres/Providers/baseProvider.dart';
 import 'package:eres/Screens/Maps.dart';
@@ -26,20 +28,46 @@ List<dynamic> messages = [];
 
 class _ChatState extends State<Chat> {
   late BaseProvider _baseProvider;
+  Timer? timer;
+  String Id = "";
   @override
   void initState() {
     _baseProvider = context.read<BaseProvider>();
-    loadMessages();
+    loadUser();
+    timer = Timer.periodic(Duration(seconds: 15), (Timer t) => loadMessages());
     super.initState();
   }
 
-  Future loadMessages() async {
-    _baseProvider.setEndPoint(
-        "/api/Chat/get-messages/${BaseProvider.userData['userId']}/096AF8D7-251B-4BE5-581C-08DA6A7BE48A");
+  Future loadUser() async {
+    _baseProvider.setEndPoint("/api/User/get-user/${widget.UserId}");
     var tmpData = await _baseProvider.get();
     setState(() {
-      messages = tmpData['data'];
+      Id = tmpData['data'].toString();
     });
+    loadMessages();
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  Future loadMessages() async {
+    try {
+      _baseProvider.setEndPoint(
+          "/api/Chat/get-messages/${BaseProvider.userData['userId']}/${Id}");
+      var tmpData = await _baseProvider.get();
+      setState(() {
+        messages = tmpData['data'];
+      });
+    } catch (error) {
+      //socket exception
+    }
+    try {
+      _baseProvider.setEndPoint("/api/Chat/see-unclicked-messages");
+      await _baseProvider.update(widget.UserId);
+    } catch (error) {}
   }
 
   TextEditingController sendMessage = new TextEditingController();
@@ -47,7 +75,7 @@ class _ChatState extends State<Chat> {
     _baseProvider.setEndPoint("/api/Chat/create-message");
     final request = {
       "userFromId": BaseProvider.userData['userId'],
-      "userToId": widget.UserId,
+      "userToId": Id,
       "content": sendMessage.text
     };
     var tmpData = await _baseProvider.insert(request);
@@ -109,7 +137,10 @@ class _ChatState extends State<Chat> {
                                                 ['firstName']),
                                             CircleAvatar(
                                               radius: 15,
-                                              backgroundColor: Colors.red,
+                                              backgroundImage: NetworkImage(
+                                                  BaseProvider.GetUrl() +
+                                                      message['userFrom']
+                                                          ['image']['path']),
                                             ),
                                           ],
                                         ),
@@ -200,6 +231,7 @@ class _ChatState extends State<Chat> {
                         )),
                         IconButton(
                             onPressed: () async {
+                              await loadMessages();
                               await createMessage();
                             },
                             icon: Icon(Icons.send))

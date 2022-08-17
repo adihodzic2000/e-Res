@@ -11,9 +11,13 @@ namespace Core.Interfaces
     public interface IUserService
     {
         Task<Message> CreateUserAsMessageAsync(UserCreateDto user, CancellationToken cancellationToken);
+        Task<Message> UpdateUserAsMessageAsync(Guid Id,UserUpdateDto user, CancellationToken cancellationToken);
         Task<Message> GetUsersAsMessageAsync(CancellationToken cancellationToken);
         Task<Message> ForgotPasswordAsMessageAsync(VerificationCreateDto verificationCreateDto, CancellationToken cancellationToken);
         Task<Message> CheckCodeAsMessageAsync(VerificationCodeDto verificationCodeDto, CancellationToken cancellationToken);
         Task<Message> NewPasswordAsMessageAsync(NewPasswordDto newPasswordDto, CancellationToken cancellationToken);
+        Task<Message> CheckUserAsMessageAsync(Guid Id, CancellationToken cancellationToken);
+        Task<Message> GetMyPlacesAsMessageAsync(CancellationToken cancellationToken);
+
     }
 }

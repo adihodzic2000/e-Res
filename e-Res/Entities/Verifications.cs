@@ -11,7 +11,7 @@ namespace Entities
     public class Verifications
     {
         public Guid Id { get; set; }
-        public string? Code { get; set; }
+        public string Code { get; set; }
         public bool IsConfirmed { get; set; }
         public DateTime ExpireDate { get; set; }
 
