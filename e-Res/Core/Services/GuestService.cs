@@ -34,7 +34,7 @@ namespace Core.Services
             {
                 var loggedUser = await authContext.GetLoggedUser();
 
-                var check = await _dbContext.Guests.Where(x => guestCreateDto.CompanyId == x.CompanyId && guestCreateDto.FirstName == x.FirstName && guestCreateDto.LastName == x.LastName && !x.IsDeleted).FirstOrDefaultAsync(cancellationToken);
+                var check = await _dbContext.Guests.Where(x => guestCreateDto.CompanyId == x.CompanyId && guestCreateDto.FirstName == x.FirstName && guestCreateDto.LastName == x.LastName && guestCreateDto.PhoneNumber==x.PhoneNumber && !x.IsDeleted).FirstOrDefaultAsync(cancellationToken);
                 var obj = Mapper.Map<Guest>(guestCreateDto);
                 if (check == null)
                 {

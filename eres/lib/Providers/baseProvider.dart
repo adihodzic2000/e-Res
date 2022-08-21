@@ -12,7 +12,7 @@ import '../Models/Country.dart';
 class BaseProvider<T> with ChangeNotifier {
   static var userData;
   static String? token;
-  static String _baseUrl = "https://10.0.2.2:7071";
+  static String _baseUrl = "http://10.0.2.2:5192";
 
   String? _endpoint;
   HttpClient client = new HttpClient();

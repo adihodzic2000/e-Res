@@ -13,8 +13,8 @@ namespace WPF
     public class APIService
     {
         //private string _resource = null;
-        public string _endpoint = "https://localhost:7071/api/";
-        public string _endpointImage = "https://localhost:7071";
+        public string _endpoint = "http://localhost:5192/api/";
+        public string _endpointImage = "http://localhost:5192";
 
         public static string Username = null;
         public static string Password = null;

@@ -42,7 +42,7 @@ namespace Core.Services
             message.IsBodyHtml = true;
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587); //Gmail smtp    
             System.Net.NetworkCredential basicCredential1 = new
-            System.Net.NetworkCredential("mverifikacija@gmail.com", "kvajdweznozeynay");
+            System.Net.NetworkCredential("mverifikacija@gmail.com", "qhmjyeiyiuruotrc");
             client.EnableSsl = true;
             client.UseDefaultCredentials = false;
             client.Credentials = basicCredential1;
@@ -78,8 +78,14 @@ namespace Core.Services
                     };
                 }
                 createMessageDto.UserToId = checkedUser.Id;
-                bool mailValid = _SendMail(checkedUser.Email, "Imate novu poruku od korisnika: " + userFrom.FirstName + " " + userFrom.LastName, createMessageDto.Content);
+                try
+                {
+                    bool mailValid = _SendMail(checkedUser.Email, "Imate novu poruku od korisnika: " + userFrom.FirstName + " " + userFrom.LastName, createMessageDto.Content);
+                }
+                catch (Exception ex)
+                {
 
+                }
                 var obj = Mapper.Map<Chat>(createMessageDto);
                 obj.CreatedDate = DateTime.Now;
 

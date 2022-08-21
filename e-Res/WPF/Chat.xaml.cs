@@ -107,7 +107,7 @@ namespace WPF
                 }
                 else
                 {
-                    if (!canRepeat)
+                    if (!canRepeat && userGetDtos.Count() > 0)
                     {
                         CurrentUser = userGetDtos[0].Id;
                         user.Text = userGetDtos[0].FirstName + " " + userGetDtos[0].LastName;
@@ -119,7 +119,7 @@ namespace WPF
             }
             catch (FlurlHttpException ex)
             {
-               // var error = ex.GetResponseJsonAsync<Core.Message>();
+                // var error = ex.GetResponseJsonAsync<Core.Message>();
                 System.Windows.Forms.MessageBox.Show("Greška");
             }
 
@@ -139,53 +139,57 @@ namespace WPF
         {
             try
             {
-                var data3 = await APIService.Put($"Chat/see-unclicked-messages", CurrentUser, null);
-                loadContacts(true);
-                
-                var data1 = await APIService.Get($"Chat/get-messages/{APIService.MyId}/{CurrentUser}");
-                var jsonResult = JsonConvert.DeserializeObject(data1.Data.ToString()).ToString();
-                var x = JsonConvert.DeserializeObject<List<GetMessageDto>>(jsonResult);
-                var orderByDate = x.OrderBy(x => x.CreatedDate);
-                messages.Children.Clear();
-                foreach (var n in orderByDate)
+                if (CurrentUser != Guid.Empty)
                 {
-                    if (n.UserFromId == CurrentUser)
+
+                    var data3 = await APIService.Put($"Chat/see-unclicked-messages", CurrentUser, null);
+                    loadContacts(true);
+
+                    var data1 = await APIService.Get($"Chat/get-messages/{APIService.MyId}/{CurrentUser}");
+                    var jsonResult = JsonConvert.DeserializeObject(data1.Data.ToString()).ToString();
+                    var x = JsonConvert.DeserializeObject<List<GetMessageDto>>(jsonResult);
+                    var orderByDate = x.OrderBy(x => x.CreatedDate);
+                    messages.Children.Clear();
+                    foreach (var n in orderByDate)
                     {
-                        Border border = new Border();
-                        border.Width = 400;
-                        border.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-                        border.CornerRadius = new CornerRadius(2, 10, 10, 2);
-                        border.Padding = new Thickness(5);
-                        border.Margin = new Thickness(5);
-                        border.Background = Helper.Colors.WhiteColor();
+                        if (n.UserFromId == CurrentUser)
+                        {
+                            Border border = new Border();
+                            border.Width = 400;
+                            border.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                            border.CornerRadius = new CornerRadius(2, 10, 10, 2);
+                            border.Padding = new Thickness(5);
+                            border.Margin = new Thickness(5);
+                            border.Background = Helper.Colors.WhiteColor();
 
-                        TextBlock textBlock = new TextBlock();
-                        textBlock.TextWrapping = TextWrapping.Wrap;
+                            TextBlock textBlock = new TextBlock();
+                            textBlock.TextWrapping = TextWrapping.Wrap;
 
-                        textBlock.Text = n.Content;
-                        border.Child = textBlock;
-                        messages.Children.Add(border);
+                            textBlock.Text = n.Content;
+                            border.Child = textBlock;
+                            messages.Children.Add(border);
+                        }
+                        else if (n.UserFromId == APIService.MyId)
+                        {
+                            Border border = new Border();
+                            border.Width = 400;
+                            border.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
+                            border.CornerRadius = new CornerRadius(10, 2, 2, 10);
+                            border.Padding = new Thickness(5);
+                            border.Margin = new Thickness(5);
+                            border.Background = Helper.Colors.GetColorFromHex("#47abcf");
+                            TextBlock textBlock = new TextBlock();
+                            textBlock.TextWrapping = TextWrapping.Wrap;
+
+                            textBlock.Foreground = Helper.Colors.WhiteColor();
+
+                            textBlock.Text = n.Content;
+                            border.Child = textBlock;
+                            messages.Children.Add(border);
+                        }
                     }
-                    else if (n.UserFromId == APIService.MyId)
-                    {
-                        Border border = new Border();
-                        border.Width = 400;
-                        border.HorizontalAlignment = System.Windows.HorizontalAlignment.Right;
-                        border.CornerRadius = new CornerRadius(10, 2, 2, 10);
-                        border.Padding = new Thickness(5);
-                        border.Margin = new Thickness(5);
-                        border.Background = Helper.Colors.GetColorFromHex("#47abcf");
-                        TextBlock textBlock = new TextBlock();
-                        textBlock.TextWrapping = TextWrapping.Wrap;
-
-                        textBlock.Foreground = Helper.Colors.WhiteColor();
-
-                        textBlock.Text = n.Content;
-                        border.Child = textBlock;
-                        messages.Children.Add(border);
-                    }
+                    scrollViewer.ScrollToEnd();
                 }
-                scrollViewer.ScrollToEnd();
 
             }
             catch (FlurlHttpException ex)
@@ -211,9 +215,10 @@ namespace WPF
                 loadMessages();
                 Message.Text = "";
             }
-            catch (Exception ex)
+            catch (FlurlHttpException ex)
             {
-                System.Windows.MessageBox.Show(ex.Message);
+                var error = ex.GetResponseJsonAsync<Core.Message>();
+                System.Windows.MessageBox.Show(error.Result == null ? "Greška!" : error.Result.Info);
             }
 
 

@@ -16,7 +16,7 @@ namespace Entities
 
         [ForeignKey(nameof(User))]
         public Guid UserId { get; set; }
-        public Images? User { get; set; }
+        public User? User { get; set; }
 
     }
 }

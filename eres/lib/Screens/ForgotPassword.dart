@@ -116,6 +116,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       final request = {"email": _email.text};
                       var tmpData =
                           await baseProvider.insertWithoutToken(request);
+                      print(tmpData);
                       setState(() {
                         if (tmpData['status'].toString() == "200") {
                           IsEmailVisible = false;

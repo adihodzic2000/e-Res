@@ -180,7 +180,7 @@ namespace Core.Services
             message.IsBodyHtml = true;
             SmtpClient client = new SmtpClient("smtp.gmail.com", 587); //Gmail smtp    
             System.Net.NetworkCredential basicCredential1 = new
-            System.Net.NetworkCredential("mverifikacija@gmail.com", "kvajdweznozeynay");
+            System.Net.NetworkCredential("mverifikacija@gmail.com", "qhmjyeiyiuruotrc");
             client.EnableSsl = true;
             client.UseDefaultCredentials = false;
             client.Credentials = basicCredential1;
@@ -201,7 +201,7 @@ namespace Core.Services
         {
             try
             {
-                var user = await _dbContext.Users.Where(x => x.Email == verificationCreateDto.Email).FirstOrDefaultAsync(cancellationToken);
+                var user = await _dbContext.Users.Where(x => string.Compare(x.Email, verificationCreateDto.Email) == 0).FirstOrDefaultAsync(cancellationToken);
                 if (user == null)
                     return new Message { Info = "Korisnik nije nađen!", Status = ExceptionCode.NotFound, IsValid = false };
                 var guid = Guid.NewGuid().ToString();
@@ -219,7 +219,7 @@ namespace Core.Services
                 bool n = _SendMail(verificationCreateDto.Email, "Verifikacijski kod", code);
                 if (n)
                 {
-                    Emails Email = new Emails { Content = "VERIFIKACIJSKI KOD", Title = code, Id = Guid.NewGuid(), UserId = user.Id };
+                    Emails Email = new Emails { Content = "VERIFIKACIJSKI KOD", Title = code, UserId = user.Id };
                     await _dbContext.AddAsync(Email);
                     await _dbContext.SaveChangesAsync(cancellationToken);
                     return new Message { Info = "Uspješno vraćen kod", IsValid = true, Status = ExceptionCode.Success };

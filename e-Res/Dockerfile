@@ -13,7 +13,6 @@ RUN dotnet publish "e-Res/e-Res.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ADD ./e-Res/Uploads/Images ./Images
-
+COPY ./e-Res/Uploads/Images ./Uploads/Images
 
 ENTRYPOINT ["dotnet", "e-Res.dll"]
