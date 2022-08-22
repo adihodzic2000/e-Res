@@ -7,6 +7,7 @@ UPUTE ZA POKRETANJE DESKTOP (WPF) I MOBILNE (FLUTTER) APLIKACIJE
 4. (Zbog veće količine podataka i međusobne zavisnosti između tabela potrebno je izvršiti restore baze na sljedeći način) Ukucati sljedeće dvije komande
  - docker exec -it e-res_eres-sql_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "QWElkj132!" -Q "RESTORE FILELISTONLY FROM DISK = '/var/opt/mssql/data/ERes.bak'" 
  - docker exec -it e-res_eres-sql_1 /opt/mssql-tools/bin/sqlcmd   -S localhost -U SA -P "QWElkj132!"  -Q "RESTORE DATABASE ERes FROM DISK = '/var/opt/mssql/data/ERes.bak' WITH MOVE 'ERes' TO '/var/opt/mssql/data/ERes.mdf', MOVE 'ERes_Log' TO '/var/opt/mssql/data/ERes.ldf'"
+ 
  Ukoliko izbaci grešku o nepostojanju kontejnera, dovoljno je da samo ukucate docker ps -a, vidite ispravan naziv za sql server i njega kopirate umjesto e-res_eres-sql_1
 5. UKOLIKO NIJE USPJEŠNO IZVRŠENO RESTORE BAZE, otvoriti SQL SERVER MANAGEMENT STUDIO sa imenom servera "localhost, 1401", i kredencijalima user=sa; Password=QWElkj132!
  - na putanji .../e-Res/e-Res nalazi se file InsertData.sql kojeg treba otvoriti u SQL SERVER MANAGEMENT STUDIO, nakon čega ga treba pokrenuti 5-6 puta kako bi se uspješno izvršio restore baze
