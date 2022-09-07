@@ -1,5 +1,6 @@
 # e-Res
 *NIJE POTREBNO POKRETANJE MIGRACIJA, SAMO BACKUP BAZE KOJI SE NALAZI U e-Res/e-Res/ERes.bak*
+
 UPUTE ZA POKRETANJE DESKTOP (WPF) I MOBILNE (FLUTTER) APLIKACIJE
 1. Nakon preuzimanja projekta u cmd-u otići na putanju .../e-Res/e-Res (eres je mobilni dio, e-Res api i desktop aplikacija)
 2. Ukucati komandu "docker-compose up --build"
