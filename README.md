@@ -1,5 +1,5 @@
 # e-Res
-
+*NIJE POTREBNO POKRETANJE MIGRACIJA, SAMO BACKUP BAZE KOJI SE NALAZI U e-Res/e-Res/ERes.bak*
 UPUTE ZA POKRETANJE DESKTOP (WPF) I MOBILNE (FLUTTER) APLIKACIJE
 1. Nakon preuzimanja projekta u cmd-u otići na putanju .../e-Res/e-Res (eres je mobilni dio, e-Res api i desktop aplikacija)
 2. Ukucati komandu "docker-compose up --build"
@@ -7,7 +7,7 @@ UPUTE ZA POKRETANJE DESKTOP (WPF) I MOBILNE (FLUTTER) APLIKACIJE
 
  Ukoliko izbaci grešku o nepostojanju kontejnera, dovoljno je da samo ukucate docker ps -a, vidite ispravan naziv za sql server i njega kopirate umjesto e-res_eres-sql_1
 
-4. Ukucati sljedeće dvije komande
+4. Ukucati sljedeće dvije komande (napomena: na kraju prve i druge linije se nalazi apostrof i navodnici potrebno je iste takodje kopirati, ispravno selektovanje počinje nakon prve crtice i završava selektovanjem zadnjih navodnika)
  - docker exec -it e-res_eres-sql_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "QWElkj132!" -Q "RESTORE FILELISTONLY FROM DISK = '/var/opt/mssql/data/ERes.bak'" 
  - docker exec -it e-res_eres-sql_1 /opt/mssql-tools/bin/sqlcmd   -S localhost -U SA -P "QWElkj132!"  -Q "RESTORE DATABASE ERes FROM DISK = '/var/opt/mssql/data/ERes.bak' WITH MOVE 'ERes' TO '/var/opt/mssql/data/ERes.mdf', MOVE 'ERes_Log' TO '/var/opt/mssql/data/ERes.ldf'"
 
