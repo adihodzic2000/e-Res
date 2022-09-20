@@ -11,6 +11,7 @@ namespace Core.Interfaces
     {
         Task<Message> CreateCompanyAsMessage(CompanyCreateDto companyCreateDto, CancellationToken cancellationToken);
         Task<Message> GetCompanyAsMessage(Guid Id, CancellationToken cancellationToken);
+        Task<Message> GetCompaniesRecommenderAsMessage(Guid CountryId, Guid CityId, bool IsApartment, bool IsHotel, CancellationToken cancellationToken);
         Task<Message> GetCompaniesAsMessage(Guid CountryId, Guid CityId, bool IsApartment, bool IsHotel, CancellationToken cancellationToken);
         Task<Message> UpdateCompanyAsMessage(Guid Id, CompanyUpdateDto companyUpdateDto, CancellationToken cancellationToken);
         //Task<Message> AddUserToCompanyAsMessage(AddUserToCompanyDto addUserToCompanyDto, CancellationToken cancellationToken);

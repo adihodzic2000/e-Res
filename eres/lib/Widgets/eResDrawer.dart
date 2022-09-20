@@ -1,5 +1,6 @@
 import 'package:eres/Screens/Bills.dart';
 import 'package:eres/Screens/ChatUsers.dart';
+import 'package:eres/Screens/Companies.dart';
 import 'package:eres/Screens/HomePage.dart';
 import 'package:eres/Screens/MyPlaces.dart';
 import 'package:eres/main.dart';
@@ -132,6 +133,16 @@ class _eResDrawerState extends State<eResDrawer> {
           //     // Navigator.popAndPushNamed(context, MyProgress.routeName);
           //   },
           // ),
+          ListTile(
+            leading: Icon(color: Colors.white, Icons.hotel),
+            title: Text(
+              'SVI OBJEKTI',
+              style: TextStyle(color: Colors.white),
+            ),
+            onTap: () {
+              Navigator.pushNamed(context, Companies.routeName);
+            },
+          ),
           ListTile(
             leading: Icon(color: Colors.white, Icons.payment),
             title: Text(

@@ -22,14 +22,16 @@ namespace Core.Services
         public IFileService fileService { get; set; }
         public ILocationService locationService { get; set; }
         public IRoomService roomService { get; set; }
+        public IAuthContext _authContext { get; set; }
 
-        public CompanyService(ERESContext dbContext, IMapper mapper, IFileService fileService, ILocationService locationService, IRoomService roomService)
+        public CompanyService(ERESContext dbContext, IMapper mapper, IFileService fileService, ILocationService locationService, IRoomService roomService, IAuthContext authContext)
         {
             _dbContext = dbContext;
             Mapper = mapper;
             this.fileService = fileService;
             this.locationService = locationService;
             this.roomService = roomService;
+            _authContext = authContext;
         }
 
         public async Task<Message> CreateCompanyAsMessage(CompanyCreateDto companyCreateDto, CancellationToken cancellationToken)
@@ -180,32 +182,103 @@ namespace Core.Services
             }
         }
 
-        public async Task<Message> GetCompaniesAsMessage(Guid CountryId, Guid CityId, bool IsApartment, bool IsHotel, CancellationToken cancellationToken)
+        public async Task<Message> GetCompaniesRecommenderAsMessage(Guid CountryId, Guid CityId, bool IsApartment, bool IsHotel, CancellationToken cancellationToken)
         {
             try
             {
-                var companies = await _dbContext.Companies
+                var loggedUser = await _authContext.GetLoggedUser();
+
+                //var companies = await _dbContext.Companies
+                //    .Include(x => x.Location)
+                //    .Include(x => x.Location.City)
+                //    .Include(x => x.Location.City.Country)
+                //    .Include(x => x.Logo)
+                //    .Where(x =>
+                //    (CountryId == Guid.Empty || CountryId == x.Location.City.CountryId) &&
+                //    (CityId == Guid.Empty || CityId == x.Location.CityId) &&
+                //    ((IsApartment && IsHotel && (x.IsHotel || x.IsApartment))
+                //    || ((!IsApartment && !x.IsApartment) || (IsApartment && x.IsApartment))
+                //    || ((!IsHotel && !x.IsHotel) || (IsHotel && x.IsHotel))
+                //    )
+                //   ).ToListAsync(cancellationToken);
+
+                //----------------------------START----------------------------------
+                var otherUsers = await _dbContext.Users.Where(x => x.CompanyId == null && !x.IsDeleted).ToListAsync(cancellationToken);
+                Dictionary<User, List<Reviews>> reviews = new Dictionary<User, List<Reviews>>();
+                foreach (var user in otherUsers)
+                {
+                    var ocjene = _dbContext.Reviews
+                        .Where(e => e.CreatedByUserId == user.Id)
+                        .ToList();
+                    reviews.Add(user, ocjene);
+                }
+                var reviewsByLoggedUser = await _dbContext.Reviews.Where(x => x.CreatedByUserId == loggedUser.Id).ToListAsync(cancellationToken);
+                if (reviewsByLoggedUser == null || reviews.Count == 0)
+                {
+                    return new Message
+                    {
+                        IsValid = false,
+                        Info = "You don't have any reviews",
+                        Status = ExceptionCode.NotFound
+                    };
+                }
+                List<Reviews> CommonGrades_1 = new List<Reviews>();
+                List<Reviews> CommonGrades_2 = new List<Reviews>();
+
+                var recommendedCompanies = new List<Guid>();
+                foreach (var item in reviews)
+                {
+                    foreach (var subItem in reviewsByLoggedUser)
+                    {
+                        if (item.Value.Any(x => x.CompanyId == subItem.CompanyId))
+                        {
+                            CommonGrades_1.Add(subItem);
+                            CommonGrades_2.Add(item.Value.FirstOrDefault(e => e.CompanyId == subItem.CompanyId));
+                        }
+                    }
+
+                    double similarity = GetSimilarity(CommonGrades_1, CommonGrades_2);
+
+                    if (similarity > 0.5)
+                    {
+                        var gradedCompanies = reviews
+                            .Select(e => e.Value)
+                            .SelectMany(e => e)
+                            .Where(e => e.Grade >= 7)
+                            .Select(e => e.CompanyId)
+                            .Where(e => !recommendedCompanies.Contains(e))
+                            .ToList();
+
+                        gradedCompanies.ForEach(e =>
+                        {
+                            if (!recommendedCompanies.Contains(e))
+                                recommendedCompanies.Add(e);
+                        });
+                    }
+
+                    CommonGrades_1.Clear();
+                    CommonGrades_2.Clear();
+                }
+                var _recommendedCompanies = await _dbContext.Companies
                     .Include(x => x.Location)
                     .Include(x => x.Location.City)
                     .Include(x => x.Location.City.Country)
                     .Include(x => x.Logo)
-                    .Where(x =>
-                    (CountryId == Guid.Empty || CountryId == x.Location.City.CountryId) &&
+                .Where(x => recommendedCompanies.Contains(x.Id) && (CountryId == Guid.Empty || CountryId == x.Location.City.CountryId) &&
                     (CityId == Guid.Empty || CityId == x.Location.CityId) &&
                     ((IsApartment && IsHotel && (x.IsHotel || x.IsApartment))
                     || ((!IsApartment && !x.IsApartment) || (IsApartment && x.IsApartment))
                     || ((!IsHotel && !x.IsHotel) || (IsHotel && x.IsHotel))
-                    ) 
-                   ).ToListAsync(cancellationToken);
-
-                var convertedCompanies = Mapper.Map<List<CompanyGetDtoWithReview>>(companies);
+                    ))
+                .ToListAsync(cancellationToken);
+                //----------------------------END------------------------------------
+                var convertedCompanies = Mapper.Map<List<CompanyGetDtoWithReview>>(_recommendedCompanies);
 
                 foreach (var company in convertedCompanies)
                 {
                     if (await _dbContext.Reviews.Where(x => x.CompanyId == company.Id).CountAsync(cancellationToken) > 0)
                         company.AvgReview = await _dbContext.Reviews.Where(x => x.CompanyId == company.Id).AverageAsync(x => x.Grade);
                 }
-                convertedCompanies = convertedCompanies.OrderByDescending(x => x.AvgReview).ToList();
                 return new Message
                 {
                     IsValid = true,
@@ -225,55 +298,68 @@ namespace Core.Services
             }
         }
 
-        //public async Task<Message> AddUserToCompanyAsMessage(AddUserToCompanyDto addUserToCompanyDto, CancellationToken cancellationToken)
-        //{
-        //    try
-        //    {
+        public async Task<Message> GetCompaniesAsMessage(Guid CountryId, Guid CityId, bool IsApartment, bool IsHotel, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var companies = await _dbContext.Companies
+                    .Include(x => x.Location)
+                    .Include(x => x.Location.City)
+                    .Include(x => x.Location.City.Country)
+                    .Include(x => x.Logo)
+                    .Where(x =>
+                    (CountryId == Guid.Empty || CountryId == x.Location.City.CountryId) &&
+                    (CityId == Guid.Empty || CityId == x.Location.CityId) &&
+                    ((IsApartment && IsHotel && (x.IsHotel || x.IsApartment))
+                    || ((!IsApartment && !x.IsApartment) || (IsApartment && x.IsApartment))
+                    || ((!IsHotel && !x.IsHotel) || (IsHotel && x.IsHotel))
+                    )
+                   ).ToListAsync(cancellationToken);
 
-        //        var company = await _dbContext.Companies.Where(x => x.Id == addUserToCompanyDto.CompanyId).FirstOrDefaultAsync(cancellationToken);
-        //        var user= await _dbContext.Users.Where(x => x.Id == addUserToCompanyDto.UserId).FirstOrDefaultAsync(cancellationToken);
+                var convertedCompanies = Mapper.Map<List<CompanyGetDtoWithReview>>(companies);
 
-        //        bool existsInCompany = await _dbContext.CompanyUsers.Where(x => x.UserId == addUserToCompanyDto.UserId && x.CompanyId == addUserToCompanyDto.CompanyId).AnyAsync(cancellationToken);
+                return new Message
+                {
+                    IsValid = true,
+                    Info = "Successfully returned data",
+                    Status = ExceptionCode.Success,
+                    Data = convertedCompanies
+                };
+            }
+            catch (Exception ex)
+            {
+                return new Message
+                {
+                    IsValid = false,
+                    Info = ex.Message,
+                    Status = ExceptionCode.BadRequest
+                };
+            }
+        }
 
-        //        if(user==null || company == null)
-        //        {
-        //            return new Message
-        //            {
-        //                IsValid = false,
-        //                Info = "You didn't send company id or user id !",
-        //                Status = ExceptionCode.BadRequest
-        //            };
-        //        }
-        //        if (existsInCompany)
-        //        {
-        //            return new Message
-        //            {
-        //                IsValid = false,
-        //                Info = $"User exists in company {company.Title} already!",
-        //                Status = ExceptionCode.BadRequest
-        //            };
-        //        }
-        //        var obj = Mapper.Map<CompanyUsers>(addUserToCompanyDto);
+        //PRIVATE METHODS
+        private double GetSimilarity(List<Reviews> CommonGrades_1, List<Reviews> CommonGrades_2)
+        {
+            if (CommonGrades_1.Count != CommonGrades_2.Count)
+                return 0;
 
-        //        await _dbContext.CompanyUsers.AddAsync(obj);
-        //        await _dbContext.SaveChangesAsync(cancellationToken);
+            double numerator = 0, denominator_1 = 0, denominator_2 = 0;
 
-        //        return new Message
-        //        {
-        //            IsValid = true,
-        //            Info = $"Successfully added user to company: {company.Title}",
-        //            Status = ExceptionCode.Success
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return new Message
-        //        {
-        //            IsValid = false,
-        //            Info = ex.Message,
-        //            Status = ExceptionCode.BadRequest
-        //        };
-        //    }
-        //}
+            for (int i = 0; i < CommonGrades_1.Count; i++)
+            {
+                numerator += CommonGrades_1[i].Grade * CommonGrades_2[i].Grade;
+                denominator_1 += CommonGrades_1[i].Grade * CommonGrades_1[i].Grade;
+                denominator_2 += CommonGrades_2[i].Grade * CommonGrades_2[i].Grade;
+            }
+            denominator_1 = Math.Sqrt(denominator_1);
+            denominator_2 = Math.Sqrt(denominator_2);
+
+            double nazivnik = denominator_1 * denominator_2;
+            if (nazivnik == 0)
+                return 0;
+            else
+                return numerator / nazivnik;
+        }
+
     }
 }

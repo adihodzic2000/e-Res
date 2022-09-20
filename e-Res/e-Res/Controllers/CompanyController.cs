@@ -23,7 +23,7 @@ namespace e_Res.Controllers
         }
 
 
-        [HttpPost("add-company"), Authorize()]
+        [HttpPost("add-company"), Authorize]
         public async Task<IActionResult> AddCompany(CompanyCreateDto companyCreateDto, CancellationToken cancellationToken)
         {
             var message = await _companyService.CreateCompanyAsMessage(companyCreateDto, cancellationToken);
@@ -31,7 +31,7 @@ namespace e_Res.Controllers
                 return BadRequest(message);
             return Ok(message);
         }
-        [HttpGet("get-company/{Id}"), Authorize()]
+        [HttpGet("get-company/{Id}"), Authorize]
         public async Task<IActionResult> GetCompany(Guid Id, CancellationToken cancellationToken)
         {
             var message = await _companyService.GetCompanyAsMessage(Id, cancellationToken);
@@ -39,7 +39,15 @@ namespace e_Res.Controllers
                 return BadRequest(message);
             return Ok(message);
         }
-        [HttpGet("get-company/{CountryId}/{CityId}/{IsApartment}/{IsHotel}"), Authorize()]
+        [HttpGet("get-companies-recommender/{CountryId}/{CityId}/{IsApartment}/{IsHotel}"), Authorize]
+        public async Task<IActionResult> GetCompaniesRecommenderAsMessageAsync(Guid CountryId, Guid CityId, bool IsApartment, bool IsHotel, CancellationToken cancellationToken)
+        {
+            var message = await _companyService.GetCompaniesRecommenderAsMessage(CountryId, CityId, IsApartment, IsHotel, cancellationToken);
+            if (message.IsValid == false)
+                return BadRequest(message);
+            return Ok(message);
+        }
+        [HttpGet("get-companies/{CountryId}/{CityId}/{IsApartment}/{IsHotel}"), Authorize]
         public async Task<IActionResult> GetCompaniesAsMessageAsync(Guid CountryId, Guid CityId, bool IsApartment, bool IsHotel, CancellationToken cancellationToken)
         {
             var message = await _companyService.GetCompaniesAsMessage(CountryId, CityId, IsApartment, IsHotel, cancellationToken);
@@ -47,7 +55,7 @@ namespace e_Res.Controllers
                 return BadRequest(message);
             return Ok(message);
         }
-        [HttpPut("update-company/{Id}"), Authorize()]
+        [HttpPut("update-company/{Id}"), Authorize]
         public async Task<IActionResult> UpdateCompany(Guid Id, CompanyUpdateDto companyUpdateDto, CancellationToken cancellationToken)
         {
             var message = await _companyService.UpdateCompanyAsMessage(Id, companyUpdateDto, cancellationToken);

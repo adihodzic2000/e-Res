@@ -12,18 +12,18 @@ import '../Models/Country.dart';
 import '../Providers/baseProvider.dart';
 import '../Widgets/MyCustomForm.dart';
 
-class HomePage extends StatefulWidget {
-  static const String routeName = "/home";
+class Companies extends StatefulWidget {
+  static const String routeName = "/companies";
   final bool IsVisibleFiltering;
 
-  const HomePage({Key? key, required this.IsVisibleFiltering})
+  const Companies({Key? key, required this.IsVisibleFiltering})
       : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<Companies> createState() => _CompaniesState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _CompaniesState extends State<Companies> {
   List<dynamic> companies = [];
   List<Country> countries = [];
   List<City> cities = [];
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
 
   Future loadData() async {
     _baseProvider.setEndPoint(
-        "/api/Company/get-companies-recommender/${selectedCountry?.id}/${selectedCity?.id}/" +
+        "/api/Company/get-companies/${selectedCountry?.id}/${selectedCity?.id}/" +
             isApartment.toString() +
             "/" +
             isHotel.toString());
@@ -213,7 +213,7 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(
                       width: 10,
                     ),
-                    Text("PREPORUČENO",
+                    Text("SVI OBJEKTI",
                         style: TextStyle(color: Colors.white, fontSize: 20)),
                     Switch(
                       value: isHotel,

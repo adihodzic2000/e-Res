@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
+import 'Screens/Companies.dart';
 import 'Screens/Maps.dart';
 import 'Screens/Registration.dart';
 
@@ -88,6 +89,11 @@ class MyApp extends StatelessWidget {
           } else if (settings.name == Registration.routeName) {
             return MaterialPageRoute(
                 builder: ((context) => const Registration()));
+          } else if (settings.name == Companies.routeName) {
+            return MaterialPageRoute(
+                builder: ((context) => Companies(
+                      IsVisibleFiltering: false,
+                    )));
           } else if (settings.name == MyHomePage.routeName) {
             return MaterialPageRoute(
                 builder: ((context) => MyHomePage(
