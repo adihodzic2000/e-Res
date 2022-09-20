@@ -1,4 +1,5 @@
 # e-Res
+*NIJE POTREBNO POKRETANJE MIGRACIJA, SAMO BACKUP BAZE KOJI SE NALAZI U e-Res/e-Res/ERes.bak*
 
 UPUTE ZA POKRETANJE DESKTOP (WPF) I MOBILNE (FLUTTER) APLIKACIJE
 1. Nakon preuzimanja projekta u cmd-u otići na putanju .../e-Res/e-Res (eres je mobilni dio, e-Res api i desktop aplikacija)
@@ -7,12 +8,12 @@ UPUTE ZA POKRETANJE DESKTOP (WPF) I MOBILNE (FLUTTER) APLIKACIJE
 
  Ukoliko izbaci grešku o nepostojanju kontejnera, dovoljno je da samo ukucate docker ps -a, vidite ispravan naziv za sql server i njega kopirate umjesto e-res_eres-sql_1
 
-4. Ukucati sljedeće dvije komande
+4. Ukucati sljedeće dvije komande (napomena: na kraju prve i druge linije se nalazi apostrof i navodnici potrebno je iste takodje kopirati, ispravno selektovanje počinje nakon prve crtice i završava selektovanjem zadnjih navodnika)
  - docker exec -it e-res_eres-sql_1 /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "QWElkj132!" -Q "RESTORE FILELISTONLY FROM DISK = '/var/opt/mssql/data/ERes.bak'" 
  - docker exec -it e-res_eres-sql_1 /opt/mssql-tools/bin/sqlcmd   -S localhost -U SA -P "QWElkj132!"  -Q "RESTORE DATABASE ERes FROM DISK = '/var/opt/mssql/data/ERes.bak' WITH MOVE 'ERes' TO '/var/opt/mssql/data/ERes.mdf', MOVE 'ERes_Log' TO '/var/opt/mssql/data/ERes.ldf'"
 
-5. UKOLIKO NIJE USPJEŠNO IZVRŠENO RESTORE BAZE, otvoriti SQL SERVER MANAGEMENT STUDIO sa imenom servera "localhost, 1401", i kredencijalima user=sa; Password=QWElkj132!
- - na putanji .../e-Res/e-Res nalazi se file InsertData.sql kojeg treba otvoriti u SQL SERVER MANAGEMENT STUDIO, nakon čega ga treba pokrenuti 5-6 puta kako bi se uspješno izvršio restore baze
+5. UKOLIKO NIJE USPJEŠNO IZVRŠENO RESTORE BAZE
+ - Uraditi update-database u VISUAL STUDIO,  otvoriti SQL SERVER MANAGEMENT STUDIO sa imenom servera "localhost, 1401", i kredencijalima user=sa; Password=QWElkj132!,  na putanji .../e-Res/e-Res nalazi se file InsertData.sql kojeg treba otvoriti u SQL SERVER MANAGEMENT STUDIO, POTREBNO JE SELEKTOVANJE SAMO KODA U InsertData.sql fajlu od 534 linije do 1052 da se ne bi previše gubilo na vremenu dok se execute-a query, nakon čega treba pokrenuti EXECUTE 7-8 puta kako bi se uspješno izvršio restore baze, ne zaboraviti naglasiti da se koristi baza ERes
 
 6. Nakon što je izvršen restore baze, pristupamo mobilnom i desktop aplikaciji, otvaramo lokaciju u cmdu .../e-Res/eres (mobilni dio) i pokrećemo komandu "flutter pub get" nakon čega pokrećemo emulator i komandu flutter run,
 zatim u Visual Studio otvaramo api i desktop dio, potrebno je u solutionu naglasit da će se samo koristiti WPF projekat, uraditi rebuild WPF dijela, nakon čega treba pritisnuti CTRL+F5
